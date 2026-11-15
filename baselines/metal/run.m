@@ -66,10 +66,28 @@ static void ref_shuffle_xor(const uint32_t *in, size_t n, uint32_t **expect) {
     }
 }
 
+static void ref_ballot(const uint32_t *in, size_t n, uint32_t **expect) {
+    for (size_t base = 0; base < n; base += CUDA_WARP) {
+        uint32_t mask = 0;
+        for (unsigned l = 0; l < CUDA_WARP; ++l) {
+            if (in[base + l] & 0xFu) mask |= 1u << l;
+        }
+        for (unsigned l = 0; l < CUDA_WARP; ++l) {
+            uint32_t *o = &expect[0][(base + l) * 3];
+            o[0] = mask;
+            o[1] = mask != 0;
+            o[2] = mask == 0xFFFFFFFFu;
+        }
+    }
+}
+
 static const baseline BASELINES[] = {
     {"metal/simd-shuffle-xor-001", "warp-primitives.shfl_xor_width",
      "simd_shuffle_xor.metal", "simd_shuffle_xor_baseline",
      4096, 256, {4096 * 5, 4096 / CUDA_WARP}, ref_shuffle_xor},
+    {"metal/simd-ballot-001", "warp-primitives.ballot_any_all",
+     "simd_ballot.metal", "simd_ballot_baseline",
+     4096, 256, {4096 * 3, 0}, ref_ballot},
 };
 
 // ---- Self-test --------------------------------------------------------------
