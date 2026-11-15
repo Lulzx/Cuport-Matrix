@@ -81,6 +81,14 @@ static void ref_ballot(const uint32_t *in, size_t n, uint32_t **expect) {
     }
 }
 
+static void ref_reduce(const uint32_t *in, size_t n, uint32_t **expect) {
+    for (size_t tg = 0; tg < n / 256; ++tg) {
+        uint32_t sum = 0;
+        for (size_t i = 0; i < 256; ++i) sum += in[tg * 256 + i];
+        expect[0][tg] = sum;
+    }
+}
+
 static const baseline BASELINES[] = {
     {"metal/simd-shuffle-xor-001", "warp-primitives.shfl_xor_width",
      "simd_shuffle_xor.metal", "simd_shuffle_xor_baseline",
@@ -88,6 +96,9 @@ static const baseline BASELINES[] = {
     {"metal/simd-ballot-001", "warp-primitives.ballot_any_all",
      "simd_ballot.metal", "simd_ballot_baseline",
      4096, 256, {4096 * 3, 0}, ref_ballot},
+    {"metal/threadgroup-reduce-001", "shared-memory-barriers.syncthreads_reduction",
+     "threadgroup_reduce.metal", "threadgroup_reduce_baseline",
+     65536, 256, {65536 / 256, 0}, ref_reduce},
 };
 
 // ---- Self-test --------------------------------------------------------------
