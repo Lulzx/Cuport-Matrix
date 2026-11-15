@@ -1,0 +1,83 @@
+# Tool registry for Cuport-Matrix.
+# Every entry is pinned. "latest" is not accepted (see CONTRIBUTING.md).
+# Metadata as observed on 2026-11-15; see docs/survey-2026-11-15.md section 3.
+
+schema: 1
+
+tools:
+  - id: cumetal
+    name: CuMetal
+    repo: https://github.com/Lulzx/cuda-metal
+    license: Apache-2.0
+    version: v0.8.0
+    released: 2026-11-08
+    install: "brew tap (see repo README) or make from source"
+    route: "CUDA C++ source -> MSL via typed IR; runtime shim"
+    in_milestone: v0
+    notes: "No CI by design; evidence tracked in .claimwire files. Self-reported 467/467 ctest, 83/83 cuda-samples on M4 Pro."
+
+  - id: mvcc
+    name: mvcc
+    repo: https://github.com/doximity/mvcc
+    license: Apache-2.0
+    version: v1.3.0
+    released: 2026-11-13
+    install: "brew tap (brew.yml is the only workflow)"
+    route: "nvcc-compatible driver, CUDA C++ -> MSL; macOS 26 only"
+    in_milestone: v0
+    notes: "Single developer. tests/run.sh --host notes paravirtual limits. 'Differences from CUDA' list in README."
+
+  - id: muda
+    name: MUDA
+    repo: https://github.com/AshitomW/MUDA
+    license: Apache-2.0
+    version: "main@2026-11-04 (PR #5 merged); pin a commit before use"
+    released: 2026-11-04
+    install: pip
+    route: "CUDA source, PTX ingestion, driver-API shim, Numba path"
+    in_milestone: v1
+    notes: "Broad claims, M1 benchmarks, no GPU CI."
+
+  - id: bare-cuda-metal
+    name: Bare CUDA Metal
+    repo: https://github.com/bturofsky/bare-cuda-metal
+    license: MIT
+    version: v0.1.0
+    released: 2026-11-04
+    install: make
+    route: "CUDA source -> MSL; bitwise A/B harness vs RTX 8000 (single workload)"
+    in_milestone: v1
+    notes: "Formerly bturofsky/cuda-metal. 14 suites on M4 self-reported."
+
+  - id: metaxuda
+    name: MetaXuda
+    repo: https://github.com/Perinban/MetaXuda
+    license: "proprietary custom licence (read before any use in the matrix)"
+    version: v2.0.2
+    released: null
+    install: pip (prebuilt binaries only)
+    route: "libcudart.dylib / libnvvm.dylib shims; patch.py monkeypatches numba.cuda"
+    in_milestone: deferred
+    notes: "Numba subset only. Scalar kernel-argument limitation reported in forum, not README."
+
+  - id: cuda4as
+    name: cuda4AS
+    repo: https://github.com/FanxinSun/cuda4AS
+    license: none
+    version: "main@2026-11-15"
+    released: null
+    install: n/a
+    route: "CUDA source -> MSL; nvcc oracle drops"
+    in_milestone: reference-only
+    notes: "No licence file, so not run in the matrix; its oracle-drop approach is cited as prior art."
+
+reference_projects:
+  - id: crosstl
+    repo: https://github.com/CrossGL/crosstl
+    why: "Closest methodological comparator: nightly conformance.yml, warp_cases.py, M2 Max scoreboard"
+  - id: zluda
+    repo: https://github.com/vosen/ZLUDA
+    why: "NVIDIA-verified PTX tests (AMD target, not Apple)"
+  - id: cudagfx
+    repo: https://github.com/ITGourmand/CudaGFX
+    why: "Coded diagnostics precedent; GPU-unvalidated"

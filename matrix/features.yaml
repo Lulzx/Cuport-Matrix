@@ -1,0 +1,78 @@
+# Feature catalogue for Cuport-Matrix milestone v0.
+# Each family lists the feature ids that probes may reference.
+# Target: ~40 probes across 8 families (see docs/survey-2026-11-15.md, section 6).
+
+schema: 1
+
+families:
+  - id: launch-geometry
+    description: Grid/block/thread indexing, dim3 handling, out-of-range guards
+    features:
+      - threadIdx_blockIdx_mapping
+      - blockDim_gridDim_3d
+      - launch_bounds_large_grid
+      - zero_size_launch
+      - dynamic_shared_size_param
+
+  - id: shared-memory-barriers
+    description: __shared__ semantics, __syncthreads, bank-conflict-free patterns
+    features:
+      - static_shared_array
+      - dynamic_shared_extern
+      - syncthreads_reduction
+      - shared_limit_32kb_boundary
+      - syncthreads_count_and_or
+
+  - id: warp-primitives
+    description: Warp-level intrinsics mapped to 32-wide SIMD groups
+    features:
+      - shfl_sync_variants
+      - shfl_xor_width
+      - ballot_any_all
+      - match_any_sync
+      - warp_reduce_add
+      - lane_mask_partial_warp
+
+  - id: atomics
+    description: Global and shared atomics, ordering, return values
+    features:
+      - atomicAdd_int_float
+      - atomicCAS_loop
+      - atomicMin_Max_unsigned
+      - shared_atomic_contention
+      - atomic_64bit
+
+  - id: fp-semantics
+    description: Floating-point behaviour versus IEEE and CUDA documented rules
+    features:
+      - fma_contraction_default
+      - fast_math_intrinsics
+      - denormal_handling
+      - fp64_emulation_presence
+      - half_bf16_conversions
+      - rounding_mode_intrinsics
+
+  - id: streams-events
+    description: Host-side runtime API behaviour
+    features:
+      - stream_ordering
+      - event_elapsed_time
+      - async_memcpy_overlap
+      - default_stream_sync
+
+  - id: device-services
+    description: printf, clock, assert, device malloc
+    features:
+      - device_printf
+      - clock64_monotonic
+      - device_assert
+      - device_malloc_free
+
+  - id: limits-refusals
+    description: How a tool reports what it cannot do
+    features:
+      - unsupported_intrinsic_diagnostic
+      - oversized_shared_request
+      - cooperative_groups_grid_sync
+      - texture_surface_refs
+      - dynamic_parallelism

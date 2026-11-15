@@ -1,0 +1,27 @@
+# Build / tool outputs
+build/
+dist/
+*.o
+*.a
+*.dylib
+*.so
+*.metallib
+*.air
+*.ptx
+*.cubin
+*.fatbin
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Editors / OS
+.DS_Store
+.vscode/
+.idea/
+*.swp
+
+# Local-only run artefacts (results are committed deliberately, per matrix/schema.md)
+results/_local/

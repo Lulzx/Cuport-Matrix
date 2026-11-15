@@ -1,0 +1,56 @@
+# Cuport-Matrix CI skeleton.
+#
+# Two lanes are planned:
+#   hosted   - GitHub-hosted macOS arm64 runner. Metal is exposed through an
+#              "Apple Paravirtual device" (GPU family ~5, 32 KB threadgroup
+#              memory, no simdgroup-matrix / bf16). It is a FEATURE SUBSET of
+#              real Apple silicon, so its rows are tagged hardware=paravirtual.
+#   m6-self  - self-hosted Apple M6 Mac mini. Disabled until the runner exists.
+#
+# This file is configuration only. The probe runner does not exist yet.
+
+name: matrix
+
+on:
+  workflow_dispatch:
+    inputs:
+      tool:
+        description: "Tool to exercise (cumetal | mvcc | all)"
+        required: false
+        default: "all"
+
+jobs:
+  hosted-paravirtual:
+    name: hosted macos-26 (paravirtual GPU)
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Describe GPU
+        run: |
+          system_profiler SPDisplaysDataType || true
+          sw_vers
+
+      - name: Install tools (pinned in matrix/tools.yaml)
+        run: |
+          echo "TODO: install CuMetal and mvcc at the pinned tags"
+
+      - name: Run probes
+        run: |
+          echo "TODO: run probes/ against ${{ github.event.inputs.tool }}"
+          echo "TODO: write results/<tool>/paravirtual/<date>.json"
+
+      - name: Upload results
+        uses: actions/upload-artifact@v4
+        with:
+          name: results-paravirtual
+          path: results/
+          if-no-files-found: ignore
+
+  # m6-self-hosted:
+  #   name: self-hosted Apple M6
+  #   runs-on: [self-hosted, macOS, ARM64, m6]
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - run: system_profiler SPDisplaysDataType
+  #     - run: echo "TODO: run probes/ and write results/<tool>/m6/<date>.json"
