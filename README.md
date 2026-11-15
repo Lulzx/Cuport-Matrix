@@ -40,6 +40,7 @@ vector. No NVIDIA GPU is required to run the matrix.
 docs/        survey and design notes
 matrix/      feature catalogue, tool registry, result schema
 probes/      probe corpus (CUDA source + oracle + metadata)
+baselines/   native Metal kernels that separate hardware from tool divergence
 results/     committed result rows, results/<tool>/<hardware>/<date>.json
 .github/     CI skeleton: hosted paravirtual lane, commented self-hosted M6 lane
 ```
