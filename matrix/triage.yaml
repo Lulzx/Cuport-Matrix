@@ -29,3 +29,35 @@ entries:
     reference: https://github.com/Lulzx/cuda-metal/blob/v0.8.0/CHANGELOG.md?plain=1#L600-L602
     upstream: null
     notes: "Device-side assert is a no-op __assert_rtn overload, so a failing assert neither stops the kernel nor returns cudaErrorAssert (710); docs/known-gaps/runtime.md also lists cudaErrorAssert as not implemented"
+
+  - tool: mvcc
+    probe: limits-refusals/oversized-shared-001
+    raw_class: silently-wrong
+    class: undocumented-divergence
+    reference: https://github.com/doximity/mvcc/blob/v1.3.0/crates/mvcc-cudart/src/api.rs#L96-L98
+    upstream: https://github.com/doximity/mvcc/issues/21
+    notes: "64 KB dynamic shared launch without cudaFuncSetAttribute opt-in succeeds and runs; the 48 KB limit is only reported by cudaFuncGetAttributes, never checked at launch"
+
+  - tool: cumetal
+    probe: limits-refusals/oversized-shared-001
+    raw_class: silently-wrong
+    class: undocumented-divergence
+    reference: https://github.com/Lulzx/cuda-metal/blob/v0.8.0/runtime/metal_backend/metal_backend.mm#L3689
+    upstream: https://github.com/Lulzx/cuda-metal/issues/205
+    notes: "64 KB dynamic shared launch succeeds; the size goes to setThreadgroupMemoryLength unchecked (Metal validation: length(65536) must be <= 32768)"
+
+  - tool: cumetal
+    probe: warp-primitives/shfl-xor-width-001
+    raw_class: silently-wrong
+    class: undocumented-divergence
+    reference: https://github.com/Lulzx/cuda-metal/blob/v0.8.0/runtime/api/cuda_runtime.h#L3037-L3042
+    upstream: https://github.com/Lulzx/cuda-metal/issues/206
+    notes: "__shfl_xor_sync with width < 32 returns the caller's value for partners in earlier groups; CUDA lets a lane read earlier groups"
+
+  - tool: cumetal
+    probe: launch-geometry/zero-size-launch-001
+    raw_class: silently-wrong
+    class: undocumented-divergence
+    reference: https://github.com/Lulzx/cuda-metal/blob/v0.8.0/runtime/rt/cuda_runtime.cpp#L7247-L7249
+    upstream: https://github.com/Lulzx/cuda-metal/issues/207
+    notes: "Zero grid or block dimension returns cudaErrorInvalidValue (1) instead of cudaErrorInvalidConfiguration (9)"
