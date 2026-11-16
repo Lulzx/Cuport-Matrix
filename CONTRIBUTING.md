@@ -83,13 +83,24 @@ comparable.
 | 7 | `async_memcpy_overlap` and `stream_ordering` reference timings on NVIDIA, so the oracle has a documented NVIDIA baseline | ❌ |
 
 The 4500 Ada box runs CUDA 13.5 (nvcc V13.5.37) with MSVC 14.44 on driver
-596.71.
+596.71. The RTX 4090 boxes run nvcc 12.6 (V12.6.20) with gcc 12.3 on drivers
+595.99 and 580.178.
 
 ### Shared rules for NVIDIA reference drops
 
 - Commit the probe's raw `CUPORT` output under `probes/<family>/<id>/reference/`
   with `nvidia-smi -q` driver and CUDA version, the `nvcc --version` line, and
-  the exact command. Label the oracle `reference-vector`.
+  the exact command. Label the oracle `reference-vector` when the drop is the
+  oracle.
+- On Linux, write drops with `PYTHONPATH=runner python -m cuport refdrop --tag
+  <gpu>-cuda<ver>` (set `CUPORT_NVCC` if `nvcc` is not on `PATH`) and check
+  two cards with `python -m cuport refcompare --a <tag> --b <tag>`. Buffers
+  must match bit-for-bit and printf lines as a multiset; `timing ` lines are
+  ignored and stderr differences (paths, host compiler) are reported as notes.
+- Fast-math probes keep a `cpu-reference` oracle with CUDA's documented error
+  bound as the tolerance. NVIDIA output is not bit-exact against the correctly
+  rounded value either, so a bit-exact NVIDIA oracle would fail tools that meet
+  the documented bound. The NVIDIA drop records that real CUDA passes.
 - `limits-refusals/dynamic-parallelism-001` needs `-rdc=true -lcudadevrt` on
   stock `nvcc`; `cooperative-grid-sync-001` needs `-std=c++17` (and
   `-Xcompiler /Zc:preprocessor` with MSVC) because CCCL 13 requires C++17.
