@@ -1,0 +1,7 @@
+id: launch-geometry/zero-size-launch-001
+family: launch-geometry
+features: [zero_size_launch]
+oracle: spec
+tolerance: bit-exact
+expect: output
+timeout_s: 60
