@@ -2,22 +2,60 @@
 
 Probe corpus for the Cuport-Matrix conformance and divergence matrix.
 
-No probes are implemented yet. This directory records the intended layout so
-that the first milestone (see `docs/survey-2026-11-15.md`, section 6) has a
-fixed target.
-
 ## Layout
 
 ```
 probes/
+  common/
+    cuport.h                # input stream, output protocol, CUDA error check
+    cuport_oracle.py        # the same stream and encodings for oracles
   <family>/                 # one of the families in matrix/features.yaml
-    <probe-id>/
+    <name>-NNN/             # probe id is "<family>/<name>-NNN"
       probe.cu              # the CUDA source under test (plain CUDA C++)
-      oracle.cpp | oracle.py | oracle.txt
-                            # CPU reference, spec citation, or committed vector
-      probe.yaml            # metadata: family, feature ids, tolerance, inputs
+      oracle.py             # expected() -> dict[str, Buffer]; spec citations in comments
+      probe.yaml            # metadata, below
       README.md             # what the probe checks and why it is interesting
 ```
+
+`probe.cu` includes the shared header as `#include "../../common/cuport.h"`.
+
+## Output protocol
+
+A probe prints its results with the `cuport_emit_*` helpers, one line per
+buffer, and finishes with `return cuport_done();`:
+
+```
+CUPORT <name> <dtype> <count> <hex> <hex> ...
+CUPORT-DONE
+```
+
+`dtype` is `u16`, `u32`, `i32`, `u64`, `f32` or `f64`. Floats are emitted
+as raw bits, so the comparison never depends on printf formatting. A run
+without `CUPORT-DONE` is a crash. Wrap every runtime call in `CUPORT_CHECK`,
+which prints `CUPORT-ERROR` and exits 3. Any other stdout line is device
+`printf` text, which an oracle can match with `TEXT_LINES`.
+
+Inputs come from `CuportLcg g("<probe id>")` on the host. The oracle draws the
+same values with `cuport_oracle.Lcg("<probe id>")`.
+
+## probe.yaml
+
+```yaml
+id: warp-primitives/shfl-xor-001
+family: warp-primitives
+features: [shfl_xor_width]       # ids from matrix/features.yaml
+oracle: cpu-reference            # spec | cpu-reference | reference-vector
+tolerance: bit-exact             # default for every buffer: bit-exact | abs:<x> | rel:<x> | ulp:<n>
+outputs:                         # optional per-buffer overrides
+  y: {tolerance: "ulp:2"}
+expect: output                   # output | refusal | either
+timeout_s: 60
+observe_only: false              # true for undefined behaviour: record, never pass or fail
+```
+
+`expect: refusal` is for `limits-refusals` probes whose correct outcome is a
+diagnostic at compile or run time. `either` accepts a correct result or a
+diagnostic.
 
 ## Probe rules
 
