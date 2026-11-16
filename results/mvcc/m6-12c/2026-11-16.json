@@ -12,21 +12,71 @@
   },
   "date": "2026-11-16",
   "runner": {
-    "command": "python -m cuport run --tool mvcc --hardware m6-12c --jobs 12 --gpu-jobs 4 --force",
-    "duration_s": 2.4,
+    "command": "python -m cuport run --tool mvcc --hardware m6-12c --jobs 6 --gpu-jobs 2 --force",
+    "duration_s": 5.7,
     "config": {
-      "jobs": 12,
-      "gpu_jobs": 4,
+      "jobs": 6,
+      "gpu_jobs": 2,
       "probe_filter": [],
-      "probes": 16,
+      "probes": 21,
       "seed": "per probe: x0 = FNV-1a 64 of the probe id; LCG and draw rule in matrix/schema.md",
       "python": "3.13.18",
       "tool_detail": "Build mvcc_1.3.0_0",
-      "repo_commit": "0ab772a016516ea97307a21f004a36acec797aff",
+      "repo_commit": "179c929a4dd5d9152b7fb44c1c28b87ff0d35f73",
       "repo_dirty": false
     }
   },
   "cells": [
+    {
+      "feature": "atomics.atomic_64bit",
+      "probe": "atomics/atomic-64bit-001",
+      "class": "bit-exact",
+      "oracle": "cpu-reference",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": ""
+    },
+    {
+      "feature": "atomics.atomicAdd_int_float",
+      "probe": "atomics/atomic-add-001",
+      "class": "bit-exact",
+      "oracle": "cpu-reference",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": ""
+    },
+    {
+      "feature": "atomics.atomicCAS_loop",
+      "probe": "atomics/cas-loop-001",
+      "class": "bit-exact",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": ""
+    },
+    {
+      "feature": "atomics.atomicMin_Max_unsigned",
+      "probe": "atomics/min-max-unsigned-001",
+      "class": "bit-exact",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": ""
+    },
+    {
+      "feature": "atomics.shared_atomic_contention",
+      "probe": "atomics/shared-contention-001",
+      "class": "bit-exact",
+      "oracle": "cpu-reference",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": ""
+    },
     {
       "feature": "launch-geometry.blockDim_gridDim_3d",
       "probe": "launch-geometry/dim3-3d-001",
