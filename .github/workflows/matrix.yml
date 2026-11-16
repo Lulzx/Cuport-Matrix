@@ -5,9 +5,10 @@
 #              "Apple Paravirtual device" (GPU family ~5, 32 KB threadgroup
 #              memory, no simdgroup-matrix / bf16). It is a FEATURE SUBSET of
 #              real Apple silicon, so its rows are tagged hardware=paravirtual.
-#   m6-self  - self-hosted Apple M6 Mac mini. Disabled until the runner exists.
+#   m6-self  - self-hosted Apple M6 Mac mini (hardware=m6-12c). Runs
+#              .github/scripts/m6-lane.sh when dispatched with m6: true.
 #
-# This file is configuration only. The probe runner does not exist yet.
+# The hosted lane is still a skeleton (TODO steps below).
 
 name: matrix
 
@@ -18,6 +19,11 @@ on:
         description: "Tool to exercise (cumetal | mvcc | all)"
         required: false
         default: "all"
+      m6:
+        description: "Also run the self-hosted M6 lane (needs the runner online)"
+        type: boolean
+        required: false
+        default: false
 
 jobs:
   hosted-paravirtual:
@@ -47,10 +53,23 @@ jobs:
           path: results/
           if-no-files-found: ignore
 
-  # m6-self-hosted:
-  #   name: self-hosted Apple M6
-  #   runs-on: [self-hosted, macOS, ARM64, m6]
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - run: system_profiler SPDisplaysDataType
-  #     - run: echo "TODO: run probes/ and write results/<tool>/m6/<date>.json"
+  # Runs only when asked for, so a dispatch does not queue forever while the
+  # M6 is offline. Registration steps: docs/m6-runner.md.
+  m6-self-hosted:
+    name: self-hosted Apple M6 (m6-12c)
+    if: ${{ inputs.m6 }}
+    runs-on: [self-hosted, macOS, ARM64, m6]
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run probes and validate rows
+        run: .github/scripts/m6-lane.sh "${{ inputs.tool }}"
+
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: results-m6-12c
+          path: results/*/m6-12c/
+          if-no-files-found: error
