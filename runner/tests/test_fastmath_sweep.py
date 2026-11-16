@@ -160,3 +160,38 @@ def test_fast_expf_oracle_scale_matches_probe_float():
     spec.loader.exec_module(mod)
     assert mod.SCALE == struct.unpack("<f", struct.pack("<f", 0.84))[0]
 
+
+def test_bound_ok_sinf_uses_exact_reference():
+    # In [2^-6, 2^-5) one ulp is 2^-29 and 2^-21.41 is about 192.66 ulp. A result
+    # 193 ulp above the rounded reference r is only 192.6 ulp from a true value
+    # 0.4 ulp above r, so it meets CUDA's bound, which is measured against the
+    # true value, not the rounded one.
+    ulp = 2.0 ** -29
+    r = 1.5 * 2.0 ** -6
+    x = np.array([0.0234], dtype=np.float32)  # unused by the __sinf bound
+    got = np.array([r + 193 * ulp], dtype=np.float32)
+    want = np.array([r], dtype=np.float32)
+    exact = np.array([r + 0.4 * ulp], dtype=np.float64)
+    assert float(got[0]) == r + 193 * ulp  # representable
+    assert not sweep.bound_ok("__sinf", x, got, want)[0]
+    assert sweep.bound_ok("__sinf", x, got, want, want_exact=exact)[0]
+
+
+def test_accumulate_sinf_max_abs_against_exact_reference():
+    ulp = 2.0 ** -29
+    r = 1.5 * 2.0 ** -6
+    got = np.array([r + 193 * ulp], dtype=np.float32)
+    want = np.array([r], dtype=np.float32)
+    exact = np.array([r + 0.4 * ulp], dtype=np.float64)
+    stats = sweep.make_stats()
+    sweep.accumulate(stats, "__sinf", got, want, np.array([True]), x=got, want_exact=exact)
+    assert stats["in_domain"]["violations"] == 0
+    assert stats["in_domain"]["max_abs"] == pytest.approx((193 - 0.4) * ulp, rel=1e-12)
+    assert stats["in_domain"]["max_ulp"] == 193
+
+
+def test_run_sweep_has_no_host_specific_paths():
+    src = (ROOT / "tools" / "fastmath-sweep" / "sweep.py").read_text()
+    assert "runbin" not in src
+    assert "/tmp/" not in src
+    assert "/home/" not in src

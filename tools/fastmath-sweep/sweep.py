@@ -77,8 +77,13 @@ def bound_ok(
     got: np.ndarray,
     want: np.ndarray,
     y: np.ndarray = None,
+    want_exact: np.ndarray | None = None,
 ) -> np.ndarray:
-    """Check if got matches want within the documented bound for fn."""
+    """Check if got matches want within the documented bound for fn.
+
+    want is the reference rounded to float32. want_exact, when given, is the
+    float64 reference before rounding; the __sinf absolute bound is measured
+    against it, because CUDA documents that bound against the true value."""
     nan_got = np.isnan(got)
     nan_want = np.isnan(want)
     inf_got = np.isinf(got)
@@ -90,7 +95,8 @@ def bound_ok(
     nonfinite_mismatch = (nan_got ^ nan_want) | (inf_got ^ inf_want) | (inf_got & inf_want & (got != want))
 
     if fn == "__sinf":
-        abs_err = np.abs(got.astype(np.float64) - want.astype(np.float64))
+        ref = want.astype(np.float64) if want_exact is None else want_exact
+        abs_err = np.abs(got.astype(np.float64) - ref)
         bound = 2.0 ** -21.41
         ok = abs_err <= bound
     elif fn == "__expf":
@@ -139,11 +145,13 @@ def accumulate(stats: dict, *args, **kwargs) -> None:
         got, want, in_dom = args[1], args[2], args[3]
         x = kwargs.get("x", None)
         y = kwargs.get("y", None)
+        want_exact = kwargs.get("want_exact", None)
     elif len(args) >= 3:
         got, want, in_dom = args[0], args[1], args[2]
         fn = kwargs.get("fn", None)
         x = kwargs.get("x", None)
         y = kwargs.get("y", None)
+        want_exact = kwargs.get("want_exact", None)
     else:
         raise ValueError("insufficient arguments to accumulate")
 
@@ -155,11 +163,12 @@ def accumulate(stats: dict, *args, **kwargs) -> None:
     mismatch = (nan_got ^ nan_want) | (inf_got ^ inf_want) | (inf_got & inf_want & (got != want))
     ulps = ulp_distance_f32(got, want)
     with np.errstate(invalid="ignore"):
-        abs_err = np.abs(got.astype(np.float64) - want.astype(np.float64))
+        ref = want.astype(np.float64) if want_exact is None else want_exact
+        abs_err = np.abs(got.astype(np.float64) - ref)
     abs_err = np.where(np.isnan(abs_err), 0.0, abs_err)
 
     if fn is not None and x is not None:
-        ok = bound_ok(fn, x, got, want, y=y)
+        ok = bound_ok(fn, x, got, want, y=y, want_exact=want_exact)
         violation = ~ok
     elif fn == "__sinf":
         violation = mismatch | (abs_err > 2.0 ** -21.41)
@@ -218,7 +227,7 @@ def run_sweep(
     chunk_size: int = 1 << 26,
     limit: int | None = None,
     seed: int = 20261116,
-    bin_path: str = "/tmp/cuport-agy-fm/sweep",
+    bin_path: str = "",
     out_path: str | None = None,
     nvcc_info: str = "",
     driver_info: str = "",
@@ -233,15 +242,12 @@ def run_sweep(
 
     rng = np.random.Generator(np.random.PCG64(seed)) if is_fdivide else None
 
-    # Wrapper invocation
-    runbin = "/home/ccbd/cuport-nv/runbin"
-
     done = 0
     while done < total:
         n = min(chunk_size, total - done)
         if not is_fdivide:
             # Unary fn: call sweep <fn> <start> <count>
-            cmd = [runbin, bin_path, fn, str(done), str(n)]
+            cmd = [bin_path, fn, str(done), str(n)]
             proc = subprocess.run(cmd, capture_output=True, check=True)
             got = np.frombuffer(proc.stdout, dtype="<f4")
 
@@ -249,19 +255,18 @@ def run_sweep(
             x = bits.view(np.float32)
 
             with np.errstate(all="ignore"):
-                if fn in ("__sinf", "sinf"):
-                    want = np.sin(x.astype(np.float64)).astype(np.float32)
-                else:
-                    want = np.exp(x.astype(np.float64)).astype(np.float32)
+                f64 = np.sin if fn in ("__sinf", "sinf") else np.exp
+                want_exact = f64(x.astype(np.float64))
+                want = want_exact.astype(np.float32)
 
             in_dom = in_domain(fn, x)
-            accumulate(stats, fn, got, want, in_dom, x=x)
+            accumulate(stats, fn, got, want, in_dom, x=x, want_exact=want_exact)
         else:
             # Binary fn __fdividef: draw random 32-bit pairs and stream over stdin
             u = rng.integers(0, 2**32, size=2 * n, dtype=np.uint32)
             pairs = u.view(np.float32)
 
-            cmd = [runbin, bin_path, fn, "0", str(n)]
+            cmd = [bin_path, fn, "0", str(n)]
             proc = subprocess.run(cmd, input=pairs.tobytes(), capture_output=True, check=True)
             got = np.frombuffer(proc.stdout, dtype="<f4")
 
@@ -332,7 +337,7 @@ def main():
     parser.add_argument("--limit", default=None, help="Limit total inputs tested")
     parser.add_argument("--seed", type=int, default=20261116, help="RNG seed for __fdividef")
     parser.add_argument("--out", default=None, help="Output summary text file")
-    parser.add_argument("--bin", default="/tmp/cuport-agy-fm/sweep", help="Path to sweep binary")
+    parser.add_argument("--bin", required=True, help="Path to the compiled sweep binary")
     parser.add_argument("--nvcc", default="", help="nvcc version string")
     parser.add_argument("--driver", default="", help="driver version string")
     parser.add_argument("--gpu", default="", help="GPU model string")

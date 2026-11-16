@@ -42,10 +42,10 @@ For both in-domain and out-of-domain partitions:
 
 Build the CUDA driver:
 ```bash
-/usr/local/cuda-12.6/bin/nvcc -std=c++17 -arch=sm_89 -o /tmp/cuport-agy-fm/sweep tools/fastmath-sweep/sweep.cu
+/usr/local/cuda-12.6/bin/nvcc -std=c++17 -arch=sm_89 -o build/fastmath-sweep/sweep tools/fastmath-sweep/sweep.cu
 ```
 
 Run a sweep via the Python driver:
 ```bash
-python3 tools/fastmath-sweep/sweep.py --fn __sinf --chunk 2^26 --limit 1048576 --out summary_sinf.txt
+python3 tools/fastmath-sweep/sweep.py --bin build/fastmath-sweep/sweep --fn __sinf --chunk 2^26 --limit 1048576 --out summary_sinf.txt
 ```
