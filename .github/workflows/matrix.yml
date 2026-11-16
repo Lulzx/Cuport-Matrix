@@ -21,8 +21,8 @@ on:
 
 jobs:
   hosted-paravirtual:
-    name: hosted macos-26 (paravirtual GPU)
-    runs-on: macos-26
+    name: hosted xcode-27 (paravirtual GPU)
+    runs-on: xcode-27
     steps:
       - uses: actions/checkout@v4
 
