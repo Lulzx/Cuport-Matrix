@@ -1,0 +1,7 @@
+id: device-services/malloc-free-001
+family: device-services
+features: [device_malloc_free]
+oracle: spec
+tolerance: bit-exact
+expect: output
+timeout_s: 60

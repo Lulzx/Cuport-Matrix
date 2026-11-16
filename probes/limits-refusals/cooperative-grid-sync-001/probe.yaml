@@ -1,0 +1,7 @@
+id: limits-refusals/cooperative-grid-sync-001
+family: limits-refusals
+features: [cooperative_groups_grid_sync]
+oracle: spec
+tolerance: bit-exact
+expect: either
+timeout_s: 60

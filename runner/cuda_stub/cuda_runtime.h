@@ -31,6 +31,7 @@ typedef enum cudaError {
     cudaErrorInvalidValue = 1,
     cudaErrorMemoryAllocation = 2,
     cudaErrorInvalidConfiguration = 9,
+    cudaErrorAssert = 710,
     cudaErrorLaunchFailure = 719,
     cudaErrorNotSupported = 801,
 } cudaError_t;
@@ -43,6 +44,31 @@ enum cudaLimit { cudaLimitStackSize, cudaLimitPrintfFifoSize, cudaLimitMallocHea
 typedef struct CUstream_st *cudaStream_t;
 typedef struct CUevent_st *cudaEvent_t;
 #define cudaStreamNonBlocking 0x01
+
+// ---- texture objects (CUDA 12 object API; references were removed) --------
+typedef unsigned long long cudaTextureObject_t;
+enum cudaChannelFormatKind { cudaChannelFormatKindSigned, cudaChannelFormatKindUnsigned, cudaChannelFormatKindFloat };
+struct cudaChannelFormatDesc { int x, y, z, w; cudaChannelFormatKind f; };
+template <class T> cudaChannelFormatDesc cudaCreateChannelDesc(void);
+enum cudaResourceType { cudaResourceTypeArray, cudaResourceTypeMipmappedArray, cudaResourceTypeLinear, cudaResourceTypePitch2D };
+struct cudaResourceDesc {
+    cudaResourceType resType;
+    union {
+        struct { void *devPtr; cudaChannelFormatDesc desc; size_t sizeInBytes; } linear;
+        struct { void *devPtr; cudaChannelFormatDesc desc; size_t width, height, pitchInBytes; } pitch2D;
+    } res;
+};
+enum cudaTextureAddressMode { cudaAddressModeWrap, cudaAddressModeClamp, cudaAddressModeBorder, cudaAddressModeMirror };
+enum cudaTextureFilterMode { cudaFilterModePoint, cudaFilterModeLinear };
+enum cudaTextureReadMode { cudaReadModeElementType, cudaReadModeNormalizedFloat };
+struct cudaTextureDesc {
+    cudaTextureAddressMode addressMode[3];
+    cudaTextureFilterMode filterMode;
+    cudaTextureReadMode readMode;
+    int sRGB, normalizedCoords;
+    float borderColor[4];
+};
+struct cudaResourceViewDesc;
 
 struct cudaDeviceProp {
     char name[256];
@@ -85,6 +111,18 @@ cudaError_t cudaEventRecord(cudaEvent_t e, cudaStream_t s = 0);
 cudaError_t cudaEventSynchronize(cudaEvent_t e);
 cudaError_t cudaEventQuery(cudaEvent_t e);
 cudaError_t cudaEventElapsedTime(float *ms, cudaEvent_t start, cudaEvent_t end);
+cudaError_t cudaCreateTextureObject(cudaTextureObject_t *tex, const cudaResourceDesc *res, const cudaTextureDesc *desc, const cudaResourceViewDesc *view);
+cudaError_t cudaDestroyTextureObject(cudaTextureObject_t tex);
+}
+
+// Device-side launch (dynamic parallelism): what nvcc lowers <<<>>> to in
+// device code when -rdc=true and cudadevrt are given.
+extern "C" {
+__device__ void *cudaGetParameterBufferV2(void *func, dim3 gridDim, dim3 blockDim, unsigned sharedMem);
+__device__ cudaError_t cudaLaunchDeviceV2(void *buf, cudaStream_t stream);
+__device__ cudaError_t cudaGetParameterBuffer(size_t alignment, size_t size, void **buf);
+__device__ cudaError_t cudaLaunchDevice(void *func, void *buf, dim3 gridDim, dim3 blockDim, unsigned sharedMem, cudaStream_t stream);
+__device__ unsigned __cudaPushCallConfiguration(dim3 gridDim, dim3 blockDim, size_t sharedMem, cudaStream_t stream);
 }
 
 template <class T> static inline cudaError_t cudaMalloc(T **p, size_t n) { return cudaMalloc((void **)p, n); }
@@ -137,6 +175,7 @@ __device__ unsigned atomicInc(unsigned *a, unsigned v);
 __device__ int atomicAnd(int *a, int v);
 __device__ int atomicOr(int *a, int v);
 
+template <class T> __device__ T tex1Dfetch(cudaTextureObject_t tex, int x);
 __device__ long long clock64(void);
 __device__ long long clock(void);
 __device__ unsigned long long __globaltimer(void);

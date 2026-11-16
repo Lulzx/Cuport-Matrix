@@ -1,0 +1,7 @@
+id: device-services/clock64-001
+family: device-services
+features: [clock64_monotonic]
+oracle: spec
+tolerance: bit-exact
+expect: output
+timeout_s: 60

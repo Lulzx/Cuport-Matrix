@@ -1,0 +1,7 @@
+id: limits-refusals/dynamic-parallelism-001
+family: limits-refusals
+features: [dynamic_parallelism]
+oracle: spec
+tolerance: bit-exact
+expect: either
+timeout_s: 60

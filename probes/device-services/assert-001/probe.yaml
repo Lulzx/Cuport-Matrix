@@ -1,0 +1,7 @@
+id: device-services/assert-001
+family: device-services
+features: [device_assert]
+oracle: spec
+tolerance: bit-exact
+expect: output
+timeout_s: 60

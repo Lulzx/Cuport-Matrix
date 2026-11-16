@@ -1,0 +1,7 @@
+id: device-services/printf-001
+family: device-services
+features: [device_printf]
+oracle: spec
+tolerance: bit-exact
+expect: output
+timeout_s: 60

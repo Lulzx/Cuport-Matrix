@@ -1,0 +1,7 @@
+id: limits-refusals/texture-object-001
+family: limits-refusals
+features: [texture_surface_refs]
+oracle: spec
+tolerance: bit-exact
+expect: either
+timeout_s: 60
