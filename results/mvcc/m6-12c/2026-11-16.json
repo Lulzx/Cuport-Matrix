@@ -12,17 +12,17 @@
   },
   "date": "2026-11-16",
   "runner": {
-    "command": "python -m cuport run --tool mvcc --hardware m6-12c --jobs 6 --gpu-jobs 2 --force",
-    "duration_s": 5.7,
+    "command": "python -m cuport run --tool mvcc --hardware m6-12c --jobs 12 --gpu-jobs 4 --force",
+    "duration_s": 4.4,
     "config": {
-      "jobs": 6,
-      "gpu_jobs": 2,
+      "jobs": 12,
+      "gpu_jobs": 4,
       "probe_filter": [],
-      "probes": 21,
+      "probes": 35,
       "seed": "per probe: x0 = FNV-1a 64 of the probe id; LCG and draw rule in matrix/schema.md",
       "python": "3.13.18",
       "tool_detail": "Build mvcc_1.3.0_0",
-      "repo_commit": "179c929a4dd5d9152b7fb44c1c28b87ff0d35f73",
+      "repo_commit": "0474ead5d9123828b5ab1c88fc0c3cc9fd35360f",
       "repo_dirty": false
     }
   },
@@ -78,6 +78,77 @@
       "notes": ""
     },
     {
+      "feature": "device-services.device_assert",
+      "probe": "device-services/assert-001",
+      "class": "refused-with-diagnostic",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": "compile: /Users/viviansobers/Projects/Cuport-Matrix/probes/device-services/assert-001/probe.cu:14:5: error: no matching function for call to '__assert_rtn' | 14 |     assert(i != bad_index); | |     ^~~~~~~~~~~~~~~~~~~~~~ | /Library/Developer/CommandLineTools/SDKs/MacOSX27.sdk/usr/include/assert.h:72:34: not"
+    },
+    {
+      "feature": "device-services.clock64_monotonic",
+      "probe": "device-services/clock64-001",
+      "class": "refused-with-diagnostic",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": "compile: [MVCC] warning: kernel _Z4tickPjS_Py: structured emission failed (unsupported intrinsic: llvm.nvvm.read.ptx.sreg.clock64); using state machine | [MVCC] error: in kernel tick(unsigned int*, unsigned int*, unsigned long long*): unsupported intrinsic: llvm.nvvm.read.ptx.sreg.clock64"
+    },
+    {
+      "feature": "device-services.device_malloc_free",
+      "probe": "device-services/malloc-free-001",
+      "class": "refused-with-diagnostic",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": "compile: /Users/viviansobers/Projects/Cuport-Matrix/probes/device-services/malloc-free-001/probe.cu:13:41: error: no matching function for call to 'malloc' | 13 |     unsigned char *p = (unsigned char *)malloc(n); | |                                         ^~~~~~ | /Library/Developer/CommandLineTools/SDKs/M"
+    },
+    {
+      "feature": "device-services.device_printf",
+      "probe": "device-services/printf-001",
+      "class": "documented-divergence",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": "raw silently-wrong; Device printf compiles and returns 0 but prints nothing; README: Metal has no counterpart to CUDA's printf buffer; printf lines differ: got 0, want 64",
+      "reference": "https://github.com/doximity/mvcc/blob/v1.3.0/README.md?plain=1#L111"
+    },
+    {
+      "feature": "fp-semantics.fast_math_intrinsics",
+      "probe": "fp-semantics/fast-expf-001",
+      "class": "within-tolerance",
+      "oracle": "cpu-reference",
+      "tolerance": "ulp:2",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": "y: 1199 elements within ulp:2"
+    },
+    {
+      "feature": "fp-semantics.fast_math_intrinsics",
+      "probe": "fp-semantics/fast-fdividef-001",
+      "class": "bit-exact",
+      "oracle": "cpu-reference",
+      "tolerance": "ulp:2",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": ""
+    },
+    {
+      "feature": "fp-semantics.fast_math_intrinsics",
+      "probe": "fp-semantics/fast-sinf-001",
+      "class": "within-tolerance",
+      "oracle": "cpu-reference",
+      "tolerance": "abs:3.9e-7",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": "y: 1708 elements within abs:3.9e-7"
+    },
+    {
       "feature": "launch-geometry.blockDim_gridDim_3d",
       "probe": "launch-geometry/dim3-3d-001",
       "class": "bit-exact",
@@ -128,6 +199,56 @@
       "notes": ""
     },
     {
+      "feature": "limits-refusals.cooperative_groups_grid_sync",
+      "probe": "limits-refusals/cooperative-grid-sync-001",
+      "class": "refused-with-diagnostic",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": "compile: /Users/viviansobers/Projects/Cuport-Matrix/probes/limits-refusals/cooperative-grid-sync-001/probe.cu:7:10: fatal error: 'cooperative_groups.h' file not found | 7 | #include <cooperative_groups.h> | |          ^~~~~~~~~~~~~~~~~~~~~~ | 1 error generated when compiling for sm_89."
+    },
+    {
+      "feature": "limits-refusals.dynamic_parallelism",
+      "probe": "limits-refusals/dynamic-parallelism-001",
+      "class": "refused-with-diagnostic",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": "compile: /Users/viviansobers/Projects/Cuport-Matrix/probes/limits-refusals/dynamic-parallelism-001/probe.cu:20:32: error: use of undeclared identifier cudaLaunchDevice | 20 |     if (threadIdx.x == 0) child<<<1, blockDim.x>>>(in, out, blockIdx.x * blockDim.x); | |                                ^ | 1 error g"
+    },
+    {
+      "feature": "limits-refusals.unsupported_intrinsic_diagnostic",
+      "probe": "limits-refusals/inline-ptx-001",
+      "class": "bit-exact",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": ""
+    },
+    {
+      "feature": "limits-refusals.oversized_shared_request",
+      "probe": "limits-refusals/oversized-shared-001",
+      "class": "silently-wrong",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": "refused[0] got 00000000 want 00000001 (1 wrong); codes[0] got 00000000 want 00000001 (1 wrong); untouched[0] got 000002fe want abababab; [1] got 000002fb want abababab; [2] got 000002f8 want abababab ... (256 wrong)"
+    },
+    {
+      "feature": "limits-refusals.texture_surface_refs",
+      "probe": "limits-refusals/texture-object-001",
+      "class": "refused-with-diagnostic",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": "compile: /Users/viviansobers/Projects/Cuport-Matrix/probes/limits-refusals/texture-object-001/probe.cu:12:14: error: use of undeclared identifier 'tex1Dfetch' | 12 |     out[i] = tex1Dfetch<uint32_t>(tex, (int)((i * 7u) % n)); | |              ^~~~~~~~~~ | /Users/viviansobers/Projects/Cuport-Matrix/probes/li"
+    },
+    {
       "feature": "shared-memory-barriers.dynamic_shared_extern",
       "probe": "shared-memory-barriers/dynamic-shared-001",
       "class": "bit-exact",
@@ -173,6 +294,26 @@
       "probe": "shared-memory-barriers/syncthreads-reduction-001",
       "class": "bit-exact",
       "oracle": "cpu-reference",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": ""
+    },
+    {
+      "feature": "streams-events.async_memcpy_overlap",
+      "probe": "streams-events/async-memcpy-overlap-001",
+      "class": "bit-exact",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": ""
+    },
+    {
+      "feature": "streams-events.stream_ordering",
+      "probe": "streams-events/stream-ordering-001",
+      "class": "bit-exact",
+      "oracle": "spec",
       "tolerance": "bit-exact",
       "evidence": "[reproduced]",
       "upstream": null,

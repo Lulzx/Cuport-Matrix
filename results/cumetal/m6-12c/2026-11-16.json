@@ -12,17 +12,17 @@
   },
   "date": "2026-11-16",
   "runner": {
-    "command": "python -m cuport run --tool cumetal --hardware m6-12c --jobs 6 --gpu-jobs 2",
-    "duration_s": 6.5,
+    "command": "python -m cuport run --tool cumetal --hardware m6-12c --jobs 12 --gpu-jobs 4 --force",
+    "duration_s": 5.2,
     "config": {
-      "jobs": 6,
-      "gpu_jobs": 2,
+      "jobs": 12,
+      "gpu_jobs": 4,
       "probe_filter": [],
-      "probes": 21,
+      "probes": 35,
       "seed": "per probe: x0 = FNV-1a 64 of the probe id; LCG and draw rule in matrix/schema.md",
       "python": "3.13.18",
       "tool_detail": "/Users/viviansobers/.local/cuport-tools/cumetal-v0.8.0/bin/cumetalc",
-      "repo_commit": "179c929a4dd5d9152b7fb44c1c28b87ff0d35f73",
+      "repo_commit": "0474ead5d9123828b5ab1c88fc0c3cc9fd35360f",
       "repo_dirty": false
     }
   },
@@ -78,6 +78,77 @@
       "notes": ""
     },
     {
+      "feature": "device-services.device_assert",
+      "probe": "device-services/assert-001",
+      "class": "documented-divergence",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": "raw silently-wrong; Device-side assert is a no-op __assert_rtn overload, so a failing assert neither stops the kernel nor returns cudaErrorAssert (710); docs/known-gaps/runtime.md also lists cudaErrorAssert as not implemented; tripped[0] got 00000000 want 00000001 (1 wrong); codes[2] got 00000000 wa",
+      "reference": "https://github.com/Lulzx/cuda-metal/blob/v0.8.0/CHANGELOG.md?plain=1#L600-L602"
+    },
+    {
+      "feature": "device-services.clock64_monotonic",
+      "probe": "device-services/clock64-001",
+      "class": "bit-exact",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": ""
+    },
+    {
+      "feature": "device-services.device_malloc_free",
+      "probe": "device-services/malloc-free-001",
+      "class": "bit-exact",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": ""
+    },
+    {
+      "feature": "device-services.device_printf",
+      "probe": "device-services/printf-001",
+      "class": "refused-with-diagnostic",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": "compile: cumetalc failed: probes/device-services/printf-001/probe.cu:15:5: typed vprintf supports tightly packed 32/64-bit scalar and pointer arguments | cumetalc failed: native AOT device compilation failed"
+    },
+    {
+      "feature": "fp-semantics.fast_math_intrinsics",
+      "probe": "fp-semantics/fast-expf-001",
+      "class": "within-tolerance",
+      "oracle": "cpu-reference",
+      "tolerance": "ulp:2",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": "y: 1127 elements within ulp:2"
+    },
+    {
+      "feature": "fp-semantics.fast_math_intrinsics",
+      "probe": "fp-semantics/fast-fdividef-001",
+      "class": "bit-exact",
+      "oracle": "cpu-reference",
+      "tolerance": "ulp:2",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": ""
+    },
+    {
+      "feature": "fp-semantics.fast_math_intrinsics",
+      "probe": "fp-semantics/fast-sinf-001",
+      "class": "within-tolerance",
+      "oracle": "cpu-reference",
+      "tolerance": "abs:3.9e-7",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": "y: 1708 elements within abs:3.9e-7"
+    },
+    {
       "feature": "launch-geometry.blockDim_gridDim_3d",
       "probe": "launch-geometry/dim3-3d-001",
       "class": "bit-exact",
@@ -128,6 +199,56 @@
       "notes": "codes[0] got 00000001 want 00000009 (1 wrong)"
     },
     {
+      "feature": "limits-refusals.cooperative_groups_grid_sync",
+      "probe": "limits-refusals/cooperative-grid-sync-001",
+      "class": "refused-with-diagnostic",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": "runtime: cudaLaunchCooperativeKernel((const void *)ring, dim3(blocks), dim3(threads), args, 0, 0) 720 too many blocks in cooperative launch"
+    },
+    {
+      "feature": "limits-refusals.dynamic_parallelism",
+      "probe": "limits-refusals/dynamic-parallelism-001",
+      "class": "refused-with-diagnostic",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": "compile: /Users/viviansobers/Projects/Cuport-Matrix/probes/limits-refusals/dynamic-parallelism-001/probe.cu:20:32: error: kernel launch from __device__ or __global__ function requires relocatable device code (i.e. requires -fgpu-rdc) | 20 |     if (threadIdx.x == 0) child<<<1, blockDim.x>>>(in, out, blockIdx"
+    },
+    {
+      "feature": "limits-refusals.unsupported_intrinsic_diagnostic",
+      "probe": "limits-refusals/inline-ptx-001",
+      "class": "bit-exact",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": ""
+    },
+    {
+      "feature": "limits-refusals.oversized_shared_request",
+      "probe": "limits-refusals/oversized-shared-001",
+      "class": "silently-wrong",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": "refused[0] got 00000000 want 00000001 (1 wrong); codes[0] got 00000000 want 00000001 (1 wrong); untouched[0] got 000002fe want abababab; [1] got 000002fb want abababab; [2] got 000002f8 want abababab ... (256 wrong)"
+    },
+    {
+      "feature": "limits-refusals.texture_surface_refs",
+      "probe": "limits-refusals/texture-object-001",
+      "class": "bit-exact",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": ""
+    },
+    {
       "feature": "shared-memory-barriers.dynamic_shared_extern",
       "probe": "shared-memory-barriers/dynamic-shared-001",
       "class": "bit-exact",
@@ -172,6 +293,26 @@
       "probe": "shared-memory-barriers/syncthreads-reduction-001",
       "class": "bit-exact",
       "oracle": "cpu-reference",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": ""
+    },
+    {
+      "feature": "streams-events.async_memcpy_overlap",
+      "probe": "streams-events/async-memcpy-overlap-001",
+      "class": "bit-exact",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": ""
+    },
+    {
+      "feature": "streams-events.stream_ordering",
+      "probe": "streams-events/stream-ordering-001",
+      "class": "bit-exact",
+      "oracle": "spec",
       "tolerance": "bit-exact",
       "evidence": "[reproduced]",
       "upstream": null,
