@@ -1,0 +1,7 @@
+id: streams-events/stream-ordering-001
+family: streams-events
+features: [stream_ordering]
+oracle: spec
+tolerance: bit-exact
+expect: output
+timeout_s: 60
