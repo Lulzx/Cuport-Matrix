@@ -58,11 +58,12 @@ def in_domain(fn: str, x: np.ndarray, y: np.ndarray = None) -> np.ndarray:
     elif fn == "__fdividef":
         if y is None:
             raise ValueError("__fdividef requires y")
-        abs_y = np.abs(y.astype(np.float64))
-        y_in = (abs_y >= 2.0 ** -126) & (abs_y <= 2.0 ** 126)
-        q = x.astype(np.float64) / y.astype(np.float64)
-        abs_q = np.abs(q)
-        q_normal = np.isfinite(q) & (abs_q >= 2.0 ** -126) & (abs_q < 2.0 ** 128)
+        with np.errstate(all="ignore"):
+            abs_y = np.abs(y.astype(np.float64))
+            y_in = (abs_y >= 2.0 ** -126) & (abs_y <= 2.0 ** 126)
+            q = x.astype(np.float64) / y.astype(np.float64)
+            abs_q = np.abs(q)
+            q_normal = np.isfinite(q) & (abs_q >= 2.0 ** -126) & (abs_q < 2.0 ** 128)
         return y_in & q_normal
     elif fn == "sinf":
         return np.isfinite(x)
@@ -247,10 +248,11 @@ def run_sweep(
             bits = np.arange(done, done + n, dtype=np.uint32)
             x = bits.view(np.float32)
 
-            if fn in ("__sinf", "sinf"):
-                want = np.sin(x.astype(np.float64)).astype(np.float32)
-            else:
-                want = np.exp(x.astype(np.float64)).astype(np.float32)
+            with np.errstate(all="ignore"):
+                if fn in ("__sinf", "sinf"):
+                    want = np.sin(x.astype(np.float64)).astype(np.float32)
+                else:
+                    want = np.exp(x.astype(np.float64)).astype(np.float32)
 
             in_dom = in_domain(fn, x)
             accumulate(stats, fn, got, want, in_dom, x=x)
@@ -265,7 +267,8 @@ def run_sweep(
 
             x = pairs[0::2]
             y = pairs[1::2]
-            want = x.astype(np.float32) / y.astype(np.float32)
+            with np.errstate(all="ignore"):
+                want = x.astype(np.float32) / y.astype(np.float32)
 
             in_dom = in_domain(fn, x, y=y)
             accumulate(stats, fn, got, want, in_dom, x=x, y=y)
