@@ -33,7 +33,9 @@ CUPORT-DONE
 as raw bits, so the comparison never depends on printf formatting. A run
 without `CUPORT-DONE` is a crash. Wrap every runtime call in `CUPORT_CHECK`,
 which prints `CUPORT-ERROR` and exits 3. Any other stdout line is device
-`printf` text, which an oracle can match with `TEXT_LINES`.
+`printf` text, which an oracle can match with `TEXT_LINES`. Lines on stdout
+starting with `timing ` are informational: never compared by `refcompare`,
+ignored by `classify` (oracles for these probes define no `TEXT_LINES`).
 
 Inputs come from `CuportLcg g("<probe id>")` on the host. The oracle draws the
 same values with `cuport_oracle.Lcg("<probe id>")`.
@@ -68,6 +70,36 @@ diagnostic.
 - Every probe states a tolerance: `bit-exact`, an absolute or relative
   epsilon, or `ulp:<n>`.
 - Probes must compile with stock `nvcc` syntax; no tool-specific extensions.
+
+## Reference drops
+
+Reference drops capture raw NVIDIA `nvcc` outputs to validate determinism
+across hardware and ground `reference-vector` oracles. Drops live at:
+
+```
+probes/<family>/<id>/reference/<gpu>-cuda<ver>/
+  output.txt
+  stderr.txt
+  build.log
+  meta.txt
+```
+
+Two runner commands manage drops:
+
+```bash
+# Capture reference drops using stock nvcc
+python -m cuport refdrop --tag <gpu>-cuda<ver> [--probe PREFIX]... [--force]
+
+# Compare two sets of reference drops across probes that have both
+python -m cuport refcompare --a TAG --b TAG [--probe PREFIX]...
+```
+
+`refdrop` runs selected probes through the `nvcc` adapter, captures build and
+run outputs, writes `meta.txt` with environment metadata, and validates each
+probe against its oracle (exiting 1 on unexpected divergence). `refcompare`
+checks agreement of build exit, run exit, `CUPORT-DONE`, `CUPORT-ERROR`, buffer
+contents, and device text (ignoring `timing ` lines and treating stderr
+differences as platform notes).
 
 ## Families (milestone v0)
 
