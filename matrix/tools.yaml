@@ -10,22 +10,24 @@ tools:
     repo: https://github.com/Lulzx/cuda-metal
     license: Apache-2.0
     version: v0.8.0
+    commit: 6651796af080ee9d869dddcd888ee158450e6a68
     released: 2026-11-08
     install: "brew tap (see repo README) or make from source"
     route: "CUDA C++ source -> MSL via typed IR; runtime shim"
     in_milestone: v0
-    notes: "No CI by design; evidence tracked in .claimwire files. Self-reported 467/467 ctest, 83/83 cuda-samples on M4 Pro."
+    notes: "No CI by design; evidence tracked in .claimwire files. Self-reported 467/467 ctest, 83/83 cuda-samples on M4 Pro. cumetalc needs Apple's offline Metal compiler (xcrun metal, full Xcode); with Command Line Tools only it builds but cannot compile kernels [reproduced 2026-11-16]."
 
   - id: mvcc
     name: mvcc
     repo: https://github.com/doximity/mvcc
     license: Apache-2.0
     version: v1.3.0
+    commit: 8a814c20138132e758c0b9475dc91283ee7183b1
     released: 2026-11-13
     install: "brew tap (brew.yml is the only workflow)"
     route: "nvcc-compatible driver, CUDA C++ -> MSL; macOS 26 only"
     in_milestone: v0
-    notes: "Single developer. tests/run.sh --host notes paravirtual limits. 'Differences from CUDA' list in README."
+    notes: "Single developer. tests/run.sh --host notes paravirtual limits. 'Differences from CUDA' list in README. README requires macOS 26; builds from source and runs probes on macOS 27.2 (M6) [reproduced 2026-11-16]."
 
   - id: muda
     name: MUDA

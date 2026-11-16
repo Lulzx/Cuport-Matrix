@@ -1,0 +1,7 @@
+id: warp-primitives/warp-reduce-add-001
+family: warp-primitives
+features: [warp_reduce_add]
+oracle: cpu-reference
+tolerance: bit-exact
+expect: output
+timeout_s: 60

@@ -1,0 +1,7 @@
+id: warp-primitives/ballot-any-all-001
+family: warp-primitives
+features: [ballot_any_all]
+oracle: spec
+tolerance: bit-exact
+expect: output
+timeout_s: 60

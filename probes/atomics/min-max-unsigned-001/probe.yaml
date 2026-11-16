@@ -1,0 +1,7 @@
+id: atomics/min-max-unsigned-001
+family: atomics
+features: [atomicMin_Max_unsigned]
+oracle: spec
+tolerance: bit-exact
+expect: output
+timeout_s: 60

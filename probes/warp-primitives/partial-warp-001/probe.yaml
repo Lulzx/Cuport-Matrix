@@ -1,0 +1,7 @@
+id: warp-primitives/partial-warp-001
+family: warp-primitives
+features: [lane_mask_partial_warp]
+oracle: spec
+tolerance: bit-exact
+expect: output
+timeout_s: 60
