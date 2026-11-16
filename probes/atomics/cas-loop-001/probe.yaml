@@ -1,0 +1,7 @@
+id: atomics/cas-loop-001
+family: atomics
+features: [atomicCAS_loop]
+oracle: spec
+tolerance: bit-exact
+expect: output
+timeout_s: 60
