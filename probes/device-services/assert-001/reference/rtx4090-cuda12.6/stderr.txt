@@ -1,0 +1,1 @@
+/home/ccbd/cuport-nv/run/probes/device-services/assert-001/probe.cu:14: void guarded(const unsigned int *, unsigned int *, unsigned int): block: [0,0,0], thread: [10,0,0] Assertion `i != bad_index` failed.
