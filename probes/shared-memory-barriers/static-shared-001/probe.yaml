@@ -1,0 +1,7 @@
+id: shared-memory-barriers/static-shared-001
+family: shared-memory-barriers
+features: [static_shared_array]
+oracle: cpu-reference
+tolerance: bit-exact
+expect: output
+timeout_s: 60
