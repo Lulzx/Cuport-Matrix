@@ -44,8 +44,8 @@ tool pin and hardware description.
 
 ## Work split (milestone v0)
 
-Status as of 2026-11-16. ✅ = done (merged on `main`, or on the named branch
-awaiting merge), ⏳ = running, ❌ = not started. Owners are chosen by
+Status as of 2026-11-16. ✅ = done and on `main`, ⏳ = in progress or
+waiting on the other person, ❌ = not started. Owners are chosen by
 hardware: Vivian runs the M6 (the only Apple lane) and two RTX 4090s; Guru has
 the RTX 4500 Ada. All three NVIDIA cards are Ada (sm_89), so reference vectors
 from any of them are comparable.
@@ -63,15 +63,15 @@ on Vivian's RTX 4090s and moved to Vivian's table.
 | 4 | Family `warp-primitives` (6 probes) | ✅ |
 | 5 | Family `atomics` (5 probes) | ✅ |
 | 6 | First `m6-12c` rows for CuMetal and mvcc | ✅ |
-| 7 | Re-run all 40 probes on `m6-12c` for both tools once families 5-8 land | ❌ |
-| 8 | Self-hosted M6 runner registered and the commented lane in `.github/workflows/matrix.yml` enabled | ❌ |
-| 9 | Divergence catalogue (`docs/`) and upstream issues for every `undocumented-divergence` | ❌ |
-| 10 | Stock `nvcc` adapter and the `refdrop` / `refcompare` runner commands, so NVIDIA reference drops are reproducible from the repo | ✅ `nvidia-refs` |
-| 11 | Two-card check: RTX 4090 drops (`reference/rtx4090-cuda12.6/`) for every probe with a reference. All 9 match the 4500 Ada drops, and all 14 match a second RTX 4090 | ✅ `nvidia-refs` |
-| 12 | `fp-semantics` fast-math probes `fast-sinf-001`, `fast-expf-001`, `fast-fdividef-001` (CPU reference, CUDA's documented bound as tolerance) with RTX 4090 drops | ✅ `nvidia-refs` |
+| 7 | Re-run every probe on `m6-12c` for both tools. Done for all 35 probes on `main` (`096bf0b`); the 5 still to come from Guru's items 5-6 go through the M6 lane when they land | ✅ |
+| 8 | Self-hosted M6 lane in `.github/workflows/matrix.yml` (`m6: true` on dispatch), running `.github/scripts/m6-lane.sh`. Lane and script done and tested from a clean clone; registering the runner needs a token from Guru (repo admin, Guru's item 11), steps in `docs/m6-runner.md` | ⏳ |
+| 9 | Divergence catalogue (`docs/divergences.md`) and upstream issues for every `undocumented-divergence`. Catalogue done; mvcc#20 filed, four more issues drafted (mvcc and CuMetal oversized shared memory, CuMetal `shfl_xor` width and zero-size launch code) | ⏳ |
+| 10 | Stock `nvcc` adapter and the `refdrop` / `refcompare` runner commands, so NVIDIA reference drops are reproducible from the repo | ✅ |
+| 11 | Two-card check: RTX 4090 drops (`reference/rtx4090-cuda12.6/`) for every probe with a reference. All 9 match the 4500 Ada drops, and all 14 match a second RTX 4090 | ✅ |
+| 12 | `fp-semantics` fast-math probes `fast-sinf-001`, `fast-expf-001`, `fast-fdividef-001` (CPU reference, CUDA's documented bound as tolerance) with RTX 4090 drops | ✅ |
 | 13 | Full-range sweep of `__sinf`, `__expf`, `__fdividef`, `sinf`, `expf` on the RTX 4090 (`tools/fastmath-sweep/`), summaries committed under `tools/fastmath-sweep/results/` | ⏳ |
-| 14 | `streams-events` probes `stream-ordering-001` and `async-memcpy-overlap-001` with RTX 4090 reference timings (`timing ` lines in the drops) | ✅ `nvidia-refs` |
-| 15 | Review and merge Guru's family 7-8 PRs; Guru reviews Vivian's family 5-6 PRs | ❌ |
+| 14 | `streams-events` probes `stream-ordering-001` and `async-memcpy-overlap-001` with RTX 4090 reference timings (`timing ` lines in the drops) | ✅ |
+| 15 | Review and merge Guru's family 7-8 PRs; Guru reviews Vivian's family 5-6 PRs. Families 7-8 merged in #4; families 5-6 went in with #2 and #3 without a separate review; work now goes straight to `main` | ✅ |
 
 ### Guru (RTX 4500 Ada)
 
@@ -87,6 +87,7 @@ on Vivian's RTX 4090s and moved to Vivian's table.
 | 8 | Hosted `paravirtual` lane: replace the TODOs in `.github/workflows/matrix.yml` with a real run that writes `results/<tool>/paravirtual/<date>.json` | ❌ |
 | 9 | Scoreboard generator (Markdown from `results/`) | ❌ |
 | 10 | Hosted-vs-M6 disagreement rate reported as a number in the scoreboard | ❌ |
+| 11 | Create the self-hosted runner registration token for the M6 (Settings → Actions → Runners; needs repo admin) and send it to Vivian, per `docs/m6-runner.md` | ❌ |
 
 The 4500 Ada box runs CUDA 13.5 (nvcc V13.5.37) with MSVC 14.44 on driver
 596.71. The RTX 4090 boxes run nvcc 12.6 (V12.6.20) with gcc 12.3 on drivers
