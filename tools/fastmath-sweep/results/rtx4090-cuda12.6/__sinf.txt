@@ -1,0 +1,25 @@
+fn: __sinf
+input_range: 0..4294967295
+total_inputs: 4294967296
+chunk_size: 67108864
+seed: n/a
+nvcc: Cuda compilation tools, release 12.6, V12.6.20
+driver: 595.99.02 (nvidia-smi reports CUDA 13.2)
+gpu: NVIDIA GeForce RTX 4090 (sm_89)
+wall_time_s: 282.756
+
+in_domain:
+  count: 2157060022
+  max_ulp: 877203419
+  max_abs: 3.474486e-07
+  violations: 0
+  histogram: [12556590, 20106624, 12955536, 8894312, 19656210, 18925672, 2063965078]
+  nonfinite_mismatch: 0
+
+out_domain:
+  count: 2137907274
+  max_ulp: 2128570958
+  max_abs: 1.872716e+00
+  violations: 2093410226
+  histogram: [19153602, 4552874, 4153424, 3930332, 12368132, 14422234, 2079326676]
+  nonfinite_mismatch: 0
