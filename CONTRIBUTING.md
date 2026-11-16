@@ -45,13 +45,12 @@ tool pin and hardware description.
 ## Work split (milestone v0)
 
 Status as of 2026-11-16. ✅ = done and merged on `main`, ❌ = not started or
-not merged. Owners are chosen by hardware: Guru runs the M6 (the only Apple
-lane) and one RTX 4500 Ada; Vivian runs two RTX 4090s. Both NVIDIA cards are
-Ada (sm_89), so reference vectors from either are comparable. Two 4090s go to
-work that needs two devices or many long sweeps; the 4500 Ada (ECC, studio
-driver) goes to single-device reference drops and diagnostics capture.
+not merged. Owners are chosen by hardware: Vivian runs the M6 (the only Apple
+lane) and an RTX 4090; Guru owns the NVIDIA reference work on the RTX 4500
+Ada. Both NVIDIA cards are Ada (sm_89), so reference vectors from either are
+comparable.
 
-### Guru (M6 + RTX 4500 Ada)
+### Vivian (M6 + RTX 4090)
 
 | # | Task | Status |
 |---|---|---|
@@ -61,31 +60,30 @@ driver) goes to single-device reference drops and diagnostics capture.
 | 4 | Family `warp-primitives` (6 probes) | ✅ |
 | 5 | Family `atomics` (5 probes) | ✅ |
 | 6 | First `m6-12c` rows for CuMetal and mvcc | ✅ |
-| 7 | Family `device-services` (4 probes: `printf`, `clock64`, `assert`, device `malloc/free`) | ✅ |
-| 8 | Family `limits-refusals` (5 probes: inline PTX, oversized shared, cooperative grid sync, texture object, dynamic parallelism; `expect: either`) | ✅ |
-| 9 | Capture stock `nvcc` diagnostics on the 4500 Ada for every `limits-refusals` probe and commit them as the refusal reference | ❌ |
-| 10 | Reference vectors on the 4500 Ada for `device-services` (`printf` formatting, `assert` text) with `nvidia-smi` and driver version | ❌ |
-| 11 | Re-run all 40 probes on `m6-12c` for both tools once families 5-8 land | ❌ |
-| 12 | Self-hosted M6 runner registered and the commented lane in `.github/workflows/matrix.yml` enabled | ❌ |
-| 13 | Divergence catalogue (`docs/`) and upstream issues for every `undocumented-divergence` | ❌ |
+| 7 | Re-run all 40 probes on `m6-12c` for both tools once families 5-8 land | ❌ |
+| 8 | Self-hosted M6 runner registered and the commented lane in `.github/workflows/matrix.yml` enabled | ❌ |
+| 9 | Divergence catalogue (`docs/`) and upstream issues for every `undocumented-divergence` | ❌ |
+| 10 | Family `fp-semantics` (6 probes: fma contraction, fast-math, denormals, FP64 emulation, half/bf16, rounding modes) | ❌ |
+| 11 | Family `streams-events` (4 probes: stream ordering, event timing, async copy overlap, default-stream sync) | ❌ |
+| 12 | Hosted `paravirtual` lane: replace the TODOs in `.github/workflows/matrix.yml` with a real run that writes `results/<tool>/paravirtual/<date>.json` | ❌ |
+| 13 | Scoreboard generator (Markdown from `results/`) | ❌ |
+| 14 | Hosted-vs-M6 disagreement rate reported as a number in the scoreboard | ❌ |
+| 15 | Review and merge Guru's family 7-8 PRs; Guru reviews Vivian's family 5-6 PRs | ❌ |
 
-Items 9 and 10 are blocked until the CUDA toolkit (`nvcc`) and MSVC are
-installed on the 4500 Ada machine; the driver (596.71) is present but no
-compiler is. Items 11-13 need the M6.
-
-### Vivian (2x RTX 4090)
+### Guru (RTX 4500 Ada)
 
 | # | Task | Status |
 |---|---|---|
-| 1 | Family `fp-semantics` (6 probes: fma contraction, fast-math, denormals, FP64 emulation, half/bf16, rounding modes) | ❌ |
-| 2 | Family `streams-events` (4 probes: stream ordering, event timing, async copy overlap, default-stream sync) | ❌ |
-| 3 | Fast-math and libdevice ulp sweeps on a 4090: full-range `__sinf`, `__expf`, `__fdividef` outputs committed as `reference-vector` oracles | ❌ |
-| 4 | Run every reference vector on both 4090s and confirm the two cards agree bit-for-bit before committing (run-to-run determinism check) | ❌ |
-| 5 | `async_memcpy_overlap` and `stream_ordering` reference timings using both devices, so the oracle has a documented NVIDIA baseline | ❌ |
-| 6 | Hosted `paravirtual` lane: replace the TODOs in `.github/workflows/matrix.yml` with a real run that writes `results/<tool>/paravirtual/<date>.json` | ❌ |
-| 7 | Scoreboard generator (Markdown from `results/`) | ❌ |
-| 8 | Hosted-vs-M6 disagreement rate reported as a number in the scoreboard | ❌ |
-| 9 | Review and merge Guru's family 7-8 PRs; Guru reviews Vivian's family 5-6 PRs | ❌ |
+| 1 | Family `device-services` (4 probes: `printf`, `clock64`, `assert`, device `malloc/free`) | ✅ |
+| 2 | Family `limits-refusals` (5 probes: inline PTX, oversized shared, cooperative grid sync, texture object, dynamic parallelism; `expect: either`) | ✅ |
+| 3 | Capture stock `nvcc` diagnostics on the 4500 Ada for every `limits-refusals` probe and commit them as the refusal reference | ❌ |
+| 4 | Reference vectors on the 4500 Ada for `device-services` (`printf` formatting, `assert` text) with `nvidia-smi` and driver version | ❌ |
+| 5 | Fast-math and libdevice ulp sweeps: full-range `__sinf`, `__expf`, `__fdividef` outputs committed as `reference-vector` oracles | ❌ |
+| 6 | Run every reference vector on two NVIDIA cards and confirm they agree bit-for-bit before committing (run-to-run determinism check) | ❌ |
+| 7 | `async_memcpy_overlap` and `stream_ordering` reference timings on NVIDIA, so the oracle has a documented NVIDIA baseline | ❌ |
+
+Items 3-7 need the CUDA toolkit (`nvcc`) and MSVC on the 4500 Ada machine;
+the driver (596.71) is present but no compiler is.
 
 ### Shared rules for NVIDIA reference drops
 
