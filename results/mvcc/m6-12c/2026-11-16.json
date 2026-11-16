@@ -12,8 +12,8 @@
   },
   "date": "2026-11-16",
   "runner": {
-    "command": "python -m cuport run --tool mvcc --hardware m6-12c --jobs 12 --gpu-jobs 4",
-    "duration_s": 2.7,
+    "command": "python -m cuport run --tool mvcc --hardware m6-12c --jobs 12 --gpu-jobs 4 --force",
+    "duration_s": 2.4,
     "config": {
       "jobs": 12,
       "gpu_jobs": 4,
@@ -22,7 +22,7 @@
       "seed": "per probe: x0 = FNV-1a 64 of the probe id; LCG and draw rule in matrix/schema.md",
       "python": "3.13.18",
       "tool_detail": "Build mvcc_1.3.0_0",
-      "repo_commit": "a6aac45780db2fdbb7cffdda255d1a9df735f58b",
+      "repo_commit": "0ab772a016516ea97307a21f004a36acec797aff",
       "repo_dirty": false
     }
   },
@@ -110,12 +110,13 @@
     {
       "feature": "shared-memory-barriers.syncthreads_count_and_or",
       "probe": "shared-memory-barriers/syncthreads-count-001",
-      "class": "silently-wrong",
+      "class": "undocumented-divergence",
       "oracle": "spec",
       "tolerance": "bit-exact",
       "evidence": "[reproduced]",
-      "upstream": null,
-      "notes": "count[0] got 00000000 want 0000000f; [1] got 00000000 want 0000000d; [2] got 00000000 want 00000012 ... (256 wrong); all[0] got 00000000 want 00000001; [1] got 00000000 want 00000001; [2] got 00000000 want 00000001 ... (150 wrong); any[52] got 00000000 want 00000001; [74] got 00000000 want 00000001;"
+      "upstream": "https://github.com/doximity/mvcc/issues/20",
+      "notes": "raw silently-wrong; __syncthreads_count/_and/_or lower to a plain barrier and store an uninitialized value; README promises a compile error for unsupported intrinsics; count[0] got 00000000 want 0000000f; [1] got 00000000 want 0000000d; [2] got 00000000 want 00000012 ... (256 wrong); all[0] got 0000",
+      "reference": "https://github.com/doximity/mvcc/blob/v1.3.0/README.md"
     },
     {
       "feature": "shared-memory-barriers.syncthreads_reduction",
