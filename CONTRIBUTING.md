@@ -76,14 +76,14 @@ comparable.
 |---|---|---|
 | 1 | Family `device-services` (4 probes: `printf`, `clock64`, `assert`, device `malloc/free`) | ✅ |
 | 2 | Family `limits-refusals` (5 probes: inline PTX, oversized shared, cooperative grid sync, texture object, dynamic parallelism; `expect: either`) | ✅ |
-| 3 | Capture stock `nvcc` diagnostics on the 4500 Ada for every `limits-refusals` probe and commit them as the refusal reference | ❌ |
-| 4 | Reference vectors on the 4500 Ada for `device-services` (`printf` formatting, `assert` text) with `nvidia-smi` and driver version | ❌ |
+| 3 | Capture stock `nvcc` output on the 4500 Ada for every `limits-refusals` probe and commit it as the reference (`reference/rtx4500ada-cuda13.5/`; all five build and match their oracle bit-exact, so NVIDIA is the `expect: either` success arm) | ✅ |
+| 4 | Reference vectors on the 4500 Ada for `device-services` (`printf` formatting, `assert` text) with `nvidia-smi` and driver version | ✅ |
 | 5 | Fast-math and libdevice ulp sweeps: full-range `__sinf`, `__expf`, `__fdividef` outputs committed as `reference-vector` oracles | ❌ |
 | 6 | Run every reference vector on two NVIDIA cards and confirm they agree bit-for-bit before committing (run-to-run determinism check) | ❌ |
 | 7 | `async_memcpy_overlap` and `stream_ordering` reference timings on NVIDIA, so the oracle has a documented NVIDIA baseline | ❌ |
 
-Items 3-7 need the CUDA toolkit (`nvcc`) and MSVC on the 4500 Ada machine;
-the driver (596.71) is present but no compiler is.
+The 4500 Ada box runs CUDA 13.5 (nvcc V13.5.37) with MSVC 14.44 on driver
+596.71.
 
 ### Shared rules for NVIDIA reference drops
 
@@ -91,7 +91,11 @@ the driver (596.71) is present but no compiler is.
   with `nvidia-smi -q` driver and CUDA version, the `nvcc --version` line, and
   the exact command. Label the oracle `reference-vector`.
 - `limits-refusals/dynamic-parallelism-001` needs `-rdc=true -lcudadevrt` on
-  stock `nvcc`; record both flags with its reference drop.
+  stock `nvcc`; `cooperative-grid-sync-001` needs `-std=c++17` (and
+  `-Xcompiler /Zc:preprocessor` with MSVC) because CCCL 13 requires C++17.
+  Record the flags with the reference drop (`meta.txt`).
+- Layout: `reference/<gpu>-cuda<ver>/{output.txt,stderr.txt,build.log,meta.txt}`;
+  `meta.txt` carries GPU, driver, nvcc, host compiler, exact command and exit codes.
 - Never commit fatbins, PTX, SASS or `cuobjdump` output (legal note in
   `docs/survey-2026-11-15.md`, section 5).
 - A reference vector from a 4090 and one from the 4500 Ada must match. If they

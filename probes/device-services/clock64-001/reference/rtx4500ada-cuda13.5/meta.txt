@@ -1,0 +1,9 @@
+probe: device-services/clock64-001
+gpu: NVIDIA RTX 4500 Ada Generation (sm_89)
+driver: 596.71 (nvidia-smi reports CUDA 13.2)
+nvcc: Cuda compilation tools, release 13.5, V13.5.37
+host compiler: MSVC 14.44.35207 (Visual Studio 2022 Build Tools), Windows 11
+command: nvcc -ccbin <msvc14.44 x64> -arch=sm_89  -o probe.exe probe.cu
+build exit: 0
+run exit: 0
+date: 2026-11-16
