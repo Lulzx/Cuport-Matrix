@@ -1,0 +1,7 @@
+id: shared-memory-barriers/syncthreads-count-001
+family: shared-memory-barriers
+features: [syncthreads_count_and_or]
+oracle: spec
+tolerance: bit-exact
+expect: output
+timeout_s: 60
