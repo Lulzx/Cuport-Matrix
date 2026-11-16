@@ -4,17 +4,17 @@ Every cell where mvcc or CuMetal does not match CUDA on the Apple M6
 (`m6-12c`, 12-core GPU, macOS 27.2). Source rows:
 `results/mvcc/m6-12c/2026-11-16.json` and
 `results/cumetal/m6-12c/2026-11-16.json`, both run from repo commit
-`0474ead` with mvcc v1.3.0 (`8a814c2`) and CuMetal v0.8.0 (`6651796`). The
+`0512216` with mvcc v1.3.0 (`8a814c2`) and CuMetal v0.8.0 (`6651796`). The
 corpus has 35 probes.
 
 | | bit-exact | within tolerance | documented divergence | undocumented divergence | refused with diagnostic | silently wrong |
 |---|---|---|---|---|---|---|
-| mvcc | 24 | 2 | 1 | 1 | 6 | 1 |
-| CuMetal | 25 | 2 | 1 | 0 | 4 | 3 |
+| mvcc | 24 | 2 | 1 | 2 | 6 | 0 |
+| CuMetal | 25 | 2 | 1 | 3 | 4 | 0 |
 
 Each entry was checked against the tool's source at its pinned commit, so
-none of them is a probe bug. "Silently wrong" stays the class until the
-upstream issue exists; triage then moves it to undocumented divergence.
+none of them is a probe bug. Every undocumented divergence has an upstream
+issue, recorded in `matrix/triage.yaml`.
 
 ## Wrong results
 
@@ -58,7 +58,9 @@ get there differently:
   `MTL_DEBUG_LAYER=1` the launch aborts with
   `length(65536) must be <= 32768`.
 
-Upstream issue drafted for each tool, not filed yet.
+Undocumented divergence in both, filed as
+[doximity/mvcc#21](https://github.com/doximity/mvcc/issues/21) and
+[Lulzx/cuda-metal#205](https://github.com/Lulzx/cuda-metal/issues/205).
 
 ### `warp-primitives/shfl-xor-width-001`: CuMetal
 
@@ -66,14 +68,15 @@ With `width < 32`, `__shfl_xor_sync` returns the caller's own value whenever
 the partner lane is in another group. CUDA only does that for later groups;
 a lane may read from an earlier one. CuMetal sends `lane ^ laneMask` through
 its indexed shuffle, which wraps the source into the caller's group. 2560 of
-the probe's outputs differ. mvcc is bit-exact. Upstream issue drafted, not
-filed.
+the probe's outputs differ. mvcc is bit-exact. Undocumented divergence, filed as
+[Lulzx/cuda-metal#206](https://github.com/Lulzx/cuda-metal/issues/206).
 
 ### `launch-geometry/zero-size-launch-001`: CuMetal
 
 A zero grid or block dimension returns `cudaErrorInvalidValue` (1) instead
 of `cudaErrorInvalidConfiguration` (9). No kernel runs, so only the error
-code is wrong. mvcc returns 9. Upstream issue drafted, not filed.
+code is wrong. mvcc returns 9. Undocumented divergence, filed as
+[Lulzx/cuda-metal#207](https://github.com/Lulzx/cuda-metal/issues/207).
 
 ## Passes with a caveat
 
@@ -109,10 +112,10 @@ Cells not listed are bit-exact or appear above.
 | Tool | Probe | Issue |
 |---|---|---|
 | mvcc | `syncthreads-count-001` | [#20](https://github.com/doximity/mvcc/issues/20), open |
-| mvcc | `oversized-shared-001` | drafted |
-| CuMetal | `oversized-shared-001` | drafted |
-| CuMetal | `shfl-xor-width-001` | drafted |
-| CuMetal | `zero-size-launch-001` | drafted |
+| mvcc | `oversized-shared-001` | [#21](https://github.com/doximity/mvcc/issues/21), open |
+| CuMetal | `oversized-shared-001` | [#205](https://github.com/Lulzx/cuda-metal/issues/205), open |
+| CuMetal | `shfl-xor-width-001` | [#206](https://github.com/Lulzx/cuda-metal/issues/206), open |
+| CuMetal | `zero-size-launch-001` | [#207](https://github.com/Lulzx/cuda-metal/issues/207), open |
 
-Once an issue is filed, its cell gets a `matrix/triage.yaml` entry with the
-issue URL and the rows are regenerated.
+When a tool fixes one of these, its raw class changes, the triage entry stops
+matching, and the cell falls back to whatever the runner measures.

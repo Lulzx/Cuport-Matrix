@@ -65,7 +65,7 @@ on Vivian's RTX 4090s and moved to Vivian's table.
 | 6 | First `m6-12c` rows for CuMetal and mvcc | ✅ |
 | 7 | Re-run every probe on `m6-12c` for both tools. Done for all 35 probes on `main` (`096bf0b`); the 5 still to come from Guru's items 5-6 go through the M6 lane when they land | ✅ |
 | 8 | Self-hosted M6 lane in `.github/workflows/matrix.yml` (`m6: true` on dispatch), running `.github/scripts/m6-lane.sh`. Lane and script done and tested from a clean clone; registering the runner needs a token from Guru (repo admin, Guru's item 11), steps in `docs/m6-runner.md` | ⏳ |
-| 9 | Divergence catalogue (`docs/divergences.md`) and upstream issues for every `undocumented-divergence`. Catalogue done; mvcc#20 filed, four more issues drafted (mvcc and CuMetal oversized shared memory, CuMetal `shfl_xor` width and zero-size launch code) | ⏳ |
+| 9 | Divergence catalogue (`docs/divergences.md`) and upstream issues for every `undocumented-divergence`. Catalogue done; issues filed as mvcc#20 and #21 and cuda-metal#205, #206 and #207, all triaged | ✅ |
 | 10 | Stock `nvcc` adapter and the `refdrop` / `refcompare` runner commands, so NVIDIA reference drops are reproducible from the repo | ✅ |
 | 11 | Two-card check: RTX 4090 drops (`reference/rtx4090-cuda12.6/`) for every probe with a reference. All 9 match the 4500 Ada drops, and all 14 match a second RTX 4090 | ✅ |
 | 12 | `fp-semantics` fast-math probes `fast-sinf-001`, `fast-expf-001`, `fast-fdividef-001` (CPU reference, CUDA's documented bound as tolerance) with RTX 4090 drops | ✅ |

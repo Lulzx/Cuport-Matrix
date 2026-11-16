@@ -13,7 +13,7 @@
   "date": "2026-11-16",
   "runner": {
     "command": "python -m cuport run --tool cumetal --hardware m6-12c --jobs 12 --gpu-jobs 4 --force",
-    "duration_s": 5.2,
+    "duration_s": 6.2,
     "config": {
       "jobs": 12,
       "gpu_jobs": 4,
@@ -22,7 +22,7 @@
       "seed": "per probe: x0 = FNV-1a 64 of the probe id; LCG and draw rule in matrix/schema.md",
       "python": "3.13.18",
       "tool_detail": "/Users/viviansobers/.local/cuport-tools/cumetal-v0.8.0/bin/cumetalc",
-      "repo_commit": "0474ead5d9123828b5ab1c88fc0c3cc9fd35360f",
+      "repo_commit": "051221661534d6bc6b18fd9d41b22208b79c7035",
       "repo_dirty": false
     }
   },
@@ -191,12 +191,13 @@
     {
       "feature": "launch-geometry.zero_size_launch",
       "probe": "launch-geometry/zero-size-launch-001",
-      "class": "silently-wrong",
+      "class": "undocumented-divergence",
       "oracle": "spec",
       "tolerance": "bit-exact",
       "evidence": "[reproduced]",
-      "upstream": null,
-      "notes": "codes[0] got 00000001 want 00000009 (1 wrong)"
+      "upstream": "https://github.com/Lulzx/cuda-metal/issues/207",
+      "notes": "raw silently-wrong; Zero grid or block dimension returns cudaErrorInvalidValue (1) instead of cudaErrorInvalidConfiguration (9); codes[0] got 00000001 want 00000009 (1 wrong)",
+      "reference": "https://github.com/Lulzx/cuda-metal/blob/v0.8.0/runtime/rt/cuda_runtime.cpp#L7247-L7249"
     },
     {
       "feature": "limits-refusals.cooperative_groups_grid_sync",
@@ -231,12 +232,13 @@
     {
       "feature": "limits-refusals.oversized_shared_request",
       "probe": "limits-refusals/oversized-shared-001",
-      "class": "silently-wrong",
+      "class": "undocumented-divergence",
       "oracle": "spec",
       "tolerance": "bit-exact",
       "evidence": "[reproduced]",
-      "upstream": null,
-      "notes": "refused[0] got 00000000 want 00000001 (1 wrong); codes[0] got 00000000 want 00000001 (1 wrong); untouched[0] got 000002fe want abababab; [1] got 000002fb want abababab; [2] got 000002f8 want abababab ... (256 wrong)"
+      "upstream": "https://github.com/Lulzx/cuda-metal/issues/205",
+      "notes": "raw silently-wrong; 64 KB dynamic shared launch succeeds; the size goes to setThreadgroupMemoryLength unchecked (Metal validation: length(65536) must be <= 32768); refused[0] got 00000000 want 00000001 (1 wrong); codes[0] got 00000000 want 00000001 (1 wrong); untouched[0] got 000002fe want abababab;",
+      "reference": "https://github.com/Lulzx/cuda-metal/blob/v0.8.0/runtime/metal_backend/metal_backend.mm#L3689"
     },
     {
       "feature": "limits-refusals.texture_surface_refs",
@@ -361,12 +363,13 @@
     {
       "feature": "warp-primitives.shfl_xor_width",
       "probe": "warp-primitives/shfl-xor-width-001",
-      "class": "silently-wrong",
+      "class": "undocumented-divergence",
       "oracle": "spec",
       "tolerance": "bit-exact",
       "evidence": "[reproduced]",
-      "upstream": null,
-      "notes": "out[71] got 861250e4 want 392e73f7; [96] got 70a952a1 want 9023b5b6; [117] got df4759b7 want 392e73f7 ... (2560 wrong)"
+      "upstream": "https://github.com/Lulzx/cuda-metal/issues/206",
+      "notes": "raw silently-wrong; __shfl_xor_sync with width < 32 returns the caller's value for partners in earlier groups; CUDA lets a lane read earlier groups; out[71] got 861250e4 want 392e73f7; [96] got 70a952a1 want 9023b5b6; [117] got df4759b7 want 392e73f7 ... (2560 wrong)",
+      "reference": "https://github.com/Lulzx/cuda-metal/blob/v0.8.0/runtime/api/cuda_runtime.h#L3037-L3042"
     },
     {
       "feature": "warp-primitives.warp_reduce_add",
