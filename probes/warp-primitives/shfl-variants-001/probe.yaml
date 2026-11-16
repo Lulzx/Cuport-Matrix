@@ -1,0 +1,7 @@
+id: warp-primitives/shfl-variants-001
+family: warp-primitives
+features: [shfl_sync_variants]
+oracle: spec
+tolerance: bit-exact
+expect: output
+timeout_s: 60
