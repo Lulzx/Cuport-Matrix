@@ -33,3 +33,36 @@ def test_stream_ordering_probe_and_oracle():
     # sum_{k=0..63} k * 0x9E3779B9 = 2016 * 0x9E3779B9 = 0xf4de90e0 (mod 2^32)
     expected_first = (first_in + 0xF4DE90E0) & 0xFFFFFFFF
     assert buf.values[0] == expected_first
+
+
+def test_async_memcpy_overlap_probe_and_oracle():
+    features = load_features(ROOT / "matrix" / "features.yaml")
+    probe_dir = ROOT / "probes" / "streams-events" / "async-memcpy-overlap-001"
+    probe = load_probe(probe_dir, features)
+    assert probe.id == "streams-events/async-memcpy-overlap-001"
+    assert probe.family == "streams-events"
+    assert probe.features == ("async_memcpy_overlap",)
+    assert probe.oracle == "spec"
+    assert probe.tolerance == "bit-exact"
+    assert probe.expect == "output"
+
+    expected, text = load_oracle(probe)
+    assert text is None
+    assert "sample" in expected
+    assert "count_wrong" in expected
+
+    wrong = expected["count_wrong"]
+    assert wrong.dtype == "u32"
+    assert list(wrong.values) == [0]
+
+    sample = expected["sample"]
+    assert sample.dtype == "u32"
+    assert len(sample.values) == 4096
+
+    import cuport_oracle as co
+    lcg = co.Lcg("streams-events/async-memcpy-overlap-001")
+    first_in = lcg.next_u32()
+    # For index 0, chunk is 0, y = x * 2654435761 + 0
+    expected_first = (first_in * 2654435761) & 0xFFFFFFFF
+    assert sample.values[0] == expected_first
+

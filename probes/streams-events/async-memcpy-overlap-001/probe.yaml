@@ -1,0 +1,7 @@
+id: streams-events/async-memcpy-overlap-001
+family: streams-events
+features: [async_memcpy_overlap]
+oracle: spec
+tolerance: bit-exact
+expect: output
+timeout_s: 60
