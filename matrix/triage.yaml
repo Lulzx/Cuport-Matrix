@@ -13,3 +13,19 @@ entries:
     reference: https://github.com/doximity/mvcc/blob/v1.3.0/README.md
     upstream: https://github.com/doximity/mvcc/issues/20
     notes: "__syncthreads_count/_and/_or lower to a plain barrier and store an uninitialized value; README promises a compile error for unsupported intrinsics"
+
+  - tool: mvcc
+    probe: device-services/printf-001
+    raw_class: silently-wrong
+    class: documented-divergence
+    reference: https://github.com/doximity/mvcc/blob/v1.3.0/README.md?plain=1#L111
+    upstream: null
+    notes: "Device printf compiles and returns 0 but prints nothing; README: Metal has no counterpart to CUDA's printf buffer"
+
+  - tool: cumetal
+    probe: device-services/assert-001
+    raw_class: silently-wrong
+    class: documented-divergence
+    reference: https://github.com/Lulzx/cuda-metal/blob/v0.8.0/CHANGELOG.md?plain=1#L600-L602
+    upstream: null
+    notes: "Device-side assert is a no-op __assert_rtn overload, so a failing assert neither stops the kernel nor returns cudaErrorAssert (710); docs/known-gaps/runtime.md also lists cudaErrorAssert as not implemented"
