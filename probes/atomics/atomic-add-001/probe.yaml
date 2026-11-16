@@ -1,0 +1,7 @@
+id: atomics/atomic-add-001
+family: atomics
+features: [atomicAdd_int_float]
+oracle: cpu-reference
+tolerance: bit-exact
+expect: output
+timeout_s: 60
