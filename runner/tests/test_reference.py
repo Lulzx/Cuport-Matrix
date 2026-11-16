@@ -298,3 +298,142 @@ def test_compare_drops_missing_done(tmp_path):
     assert any("CUPORT-DONE" in p for p in cmp.problems)
 
 
+def test_refdrop_cli_refuses_without_force(tmp_path, monkeypatch):
+    import cuport.__main__ as cli
+    from helpers import GOOD, make_probe
+    from test_cli import FEATURES_YAML
+
+    repo = tmp_path / "repo"
+    (repo / "matrix").mkdir(parents=True)
+    (repo / "matrix" / "features.yaml").write_text(FEATURES_YAML)
+    probe_dir = make_probe(repo / "probes", stdout=GOOD)
+
+    existing_drop = probe_dir / "reference" / "tag1"
+    existing_drop.mkdir(parents=True)
+
+    assert cli.main(["--root", str(repo), "refdrop", "--tag", "tag1"]) == 2
+
+
+def test_refdrop_cli_runs_and_writes_drop(tmp_path, monkeypatch, capsys):
+    import cuport.__main__ as cli
+    from helpers import GOOD, make_probe
+    from test_cli import FEATURES_YAML
+
+    repo = tmp_path / "repo"
+    (repo / "matrix").mkdir(parents=True)
+    (repo / "matrix" / "features.yaml").write_text(FEATURES_YAML)
+    probe_dir = make_probe(repo / "probes", stdout=GOOD)
+
+    calls = []
+
+    def fake_execute(cmd, timeout_s, cwd=None, env=None):
+        calls.append(cmd)
+        if cmd[0] == "nvcc":
+            return StepResult(cmd, 0, "compile out\n", "", 0.1, False)
+        # executable run
+        return StepResult(cmd, 0, GOOD, "", 0.05, False)
+
+    monkeypatch.setattr(ad, "execute", fake_execute)
+    monkeypatch.setenv("CUPORT_NVCC_ARCH", "sm_89")
+
+    # Mock nvcc availability & describe
+    nvcc_adapter = load_adapter("nvcc")
+    monkeypatch.setattr(nvcc_adapter, "available", lambda: (True, "mocked nvcc"))
+    import cuport.reference as ref
+    monkeypatch.setattr(ref, "collect_env", lambda root=None: {
+        "gpu": "NVIDIA RTX 4090 (sm_89)",
+        "driver": "595.99 (nvidia-smi reports CUDA 12.6)",
+        "nvcc": "Cuda compilation tools, release 12.6",
+        "host": "gcc 11.4.0",
+        "repo_commit": "abcdef",
+        "date": "2026-11-16",
+        "root": repo,
+    })
+
+    rc = cli.main(["--root", str(repo), "refdrop", "--tag", "tag1"])
+    assert rc == 0
+
+    out = capsys.readouterr().out
+    assert "warp-primitives/shfl-xor-001" in out
+    assert "bit-exact" in out
+
+    drop_dir = probe_dir / "reference" / "tag1"
+    assert (drop_dir / "output.txt").read_text() == GOOD
+    assert (drop_dir / "meta.txt").exists()
+
+    # With existing drop and --force, should overwrite and succeed
+    rc_force = cli.main(["--root", str(repo), "refdrop", "--tag", "tag1", "--force"])
+    assert rc_force == 0
+
+
+def test_refdrop_cli_fails_when_probe_fails(tmp_path, monkeypatch, capsys):
+    import cuport.__main__ as cli
+    from helpers import make_probe
+    from test_cli import FEATURES_YAML
+
+    repo = tmp_path / "repo"
+    (repo / "matrix").mkdir(parents=True)
+    (repo / "matrix" / "features.yaml").write_text(FEATURES_YAML)
+    # Output that does not match expected oracle
+    bad_output = "CUPORT a u32 2 00000001 00000099\nCUPORT-DONE\n"
+    make_probe(repo / "probes", stdout=bad_output)
+
+    def fake_execute(cmd, timeout_s, cwd=None, env=None):
+        if cmd[0] == "nvcc":
+            return StepResult(cmd, 0, "", "", 0.1, False)
+        return StepResult(cmd, 0, bad_output, "", 0.05, False)
+
+    monkeypatch.setattr(ad, "execute", fake_execute)
+    monkeypatch.setenv("CUPORT_NVCC_ARCH", "sm_89")
+
+    nvcc_adapter = load_adapter("nvcc")
+    monkeypatch.setattr(nvcc_adapter, "available", lambda: (True, "mocked nvcc"))
+    import cuport.reference as ref
+    monkeypatch.setattr(ref, "collect_env", lambda root=None: {
+        "gpu": "sm_89", "driver": "595", "nvcc": "12.6", "host": "gcc",
+        "repo_commit": "123", "date": "2026-11-16", "root": repo,
+    })
+
+    rc = cli.main(["--root", str(repo), "refdrop", "--tag", "tag1"])
+    assert rc == 1
+    assert "silently-wrong" in capsys.readouterr().out
+
+
+def test_refcompare_cli(tmp_path, capsys):
+    import cuport.__main__ as cli
+    from helpers import GOOD, make_probe
+    from test_cli import FEATURES_YAML
+
+    repo = tmp_path / "repo"
+    (repo / "matrix").mkdir(parents=True)
+    (repo / "matrix" / "features.yaml").write_text(FEATURES_YAML)
+    probe_dir = make_probe(repo / "probes", stdout=GOOD)
+
+    drop_a = probe_dir / "reference" / "tagA"
+    drop_b = probe_dir / "reference" / "tagB"
+
+    # None compared -> exit 2
+    rc_none = cli.main(["--root", str(repo), "refcompare", "--a", "tagA", "--b", "tagB"])
+    assert rc_none == 2
+
+    # Both drops exist and match -> exit 0
+    _make_fake_drop(drop_a, stdout=GOOD)
+    _make_fake_drop(drop_b, stdout=GOOD)
+    capsys.readouterr()
+
+    rc_agree = cli.main(["--root", str(repo), "refcompare", "--a", "tagA", "--b", "tagB"])
+    assert rc_agree == 0
+    out_agree = capsys.readouterr().out
+    assert "agree" in out_agree
+    assert "1 compared, 0 differ" in out_agree
+
+    # One drop differs -> exit 1
+    _make_fake_drop(drop_b, stdout="CUPORT a u32 2 00000001 00000099\nCUPORT-DONE\n")
+    rc_differ = cli.main(["--root", str(repo), "refcompare", "--a", "tagA", "--b", "tagB"])
+    assert rc_differ == 1
+    out_differ = capsys.readouterr().out
+    assert "DIFFER" in out_differ
+    assert "1 compared, 1 differ" in out_differ
+
+
+
