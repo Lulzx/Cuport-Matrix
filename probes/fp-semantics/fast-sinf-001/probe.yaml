@@ -1,0 +1,7 @@
+id: fp-semantics/fast-sinf-001
+family: fp-semantics
+features: [fast_math_intrinsics]
+oracle: cpu-reference
+tolerance: "abs:3.9e-7"
+expect: output
+timeout_s: 60
