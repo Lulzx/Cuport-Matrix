@@ -1,0 +1,7 @@
+id: warp-primitives/shfl-xor-width-001
+family: warp-primitives
+features: [shfl_xor_width]
+oracle: spec
+tolerance: bit-exact
+expect: output
+timeout_s: 60
