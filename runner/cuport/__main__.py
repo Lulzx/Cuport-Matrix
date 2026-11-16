@@ -69,8 +69,30 @@ def cmd_list(args) -> int:
     return 1 if errors else 0
 
 
+STUB_DIR = pathlib.Path(__file__).resolve().parents[1] / "cuda_stub"
+
+
+def syntax_errors(probe) -> list[str]:
+    """Parse probe.cu with clang's CUDA mode against runner/cuda_stub, host side
+    and device side. Catches typos and missing declarations; runs nothing."""
+    base = ["clang++", "-x", "cuda", "-std=c++17", "-nocudainc", "-nocudalib", "--cuda-gpu-arch=sm_80",
+            "-fsyntax-only", "-Wno-unknown-cuda-version", "-I", str(STUB_DIR), str(probe.dir / "probe.cu")]
+    out = []
+    for side in ("--cuda-host-only", "--cuda-device-only"):
+        r = subprocess.run(base + [side], capture_output=True, text=True)
+        if r.returncode != 0:
+            first = [l for l in r.stderr.splitlines() if "error:" in l][:3]
+            out.append(f"{probe.id}: syntax ({side[7:]}): " + " | ".join(first or [r.stderr.strip()[:300]]))
+    return out
+
+
 def cmd_check(args) -> int:
     _, probes, errors = _load(args.root)
+    if args.syntax:
+        from concurrent.futures import ThreadPoolExecutor
+        with ThreadPoolExecutor(os.cpu_count()) as pool:
+            for errs in pool.map(syntax_errors, probes):
+                errors.extend(errs)
     for p in probes:
         try:
             expected, _ = load_oracle(p)
@@ -151,7 +173,9 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--root", type=pathlib.Path, default=ROOT)
     sub = ap.add_subparsers(dest="cmd", required=True)
     sub.add_parser("list").set_defaults(fn=cmd_list)
-    sub.add_parser("check").set_defaults(fn=cmd_check)
+    c = sub.add_parser("check")
+    c.add_argument("--syntax", action="store_true", help="also parse probe.cu with clang against runner/cuda_stub")
+    c.set_defaults(fn=cmd_check)
     r = sub.add_parser("run")
     r.add_argument("--tool", required=True)
     r.add_argument("--hardware", required=True)

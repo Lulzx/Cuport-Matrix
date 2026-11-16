@@ -53,3 +53,26 @@ def test_run_writes_valid_row_and_refuses_overwrite(repo, capsys):
 def test_run_with_unknown_probe_filter_fails(repo):
     assert cli.main(["--root", str(repo), "run", "--tool", "fake", "--hardware", "m6-12c",
                      "--probe", "atomics/"]) == 1
+
+
+VALID_CU = """#include "../../common/cuport.h"
+__global__ void k(uint32_t *o) { o[threadIdx.x] = blockIdx.x; __syncthreads(); }
+int main() {
+    uint32_t *d;
+    CUPORT_CHECK(cudaMalloc(&d, 128));
+    k<<<1, 32>>>(d);
+    CUPORT_CHECK(cudaDeviceSynchronize());
+    return cuport_done();
+}
+"""
+
+
+def test_check_syntax(repo, capsys):
+    d = repo / "probes" / "warp-primitives" / "shfl-xor-001"
+    (repo / "probes" / "common").symlink_to(cli.ROOT / "probes" / "common")
+    (d / "probe.cu").write_text(VALID_CU)
+    assert cli.main(["--root", str(repo), "check", "--syntax"]) == 0
+    capsys.readouterr()
+    (d / "probe.cu").write_text(VALID_CU.replace("blockIdx.x;", "blockIdx.q;"))
+    assert cli.main(["--root", str(repo), "check", "--syntax"]) == 1
+    assert "no member named 'q'" in capsys.readouterr().out
