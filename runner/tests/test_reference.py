@@ -178,3 +178,123 @@ def test_write_drop_without_run_step(tmp_path):
     assert meta_dict["build exit"] == "1"
     assert meta_dict["run exit"] == "not run"
 
+
+def _make_fake_drop(drop_dir, stdout="CUPORT a u32 2 00000001 00000002\nCUPORT-DONE\n",
+                    stderr="", build_exit=0, run_exit=0):
+    drop_dir.mkdir(parents=True, exist_ok=True)
+    (drop_dir / "output.txt").write_text(stdout)
+    (drop_dir / "stderr.txt").write_text(stderr)
+    (drop_dir / "build.log").write_text("build log\n")
+    meta = [
+        "probe: family/p1",
+        "gpu: NVIDIA RTX 4090",
+        "driver: 595.99",
+        "nvcc: release 12.6",
+        "host compiler: gcc",
+        "command: nvcc probe.cu",
+        f"build exit: {build_exit}",
+        f"run exit: {run_exit}",
+        "date: 2026-11-16",
+        "repo commit: 123456",
+        "seed: default",
+    ]
+    (drop_dir / "meta.txt").write_text("\n".join(meta) + "\n")
+
+
+def test_compare_drops_identical(tmp_path):
+    import cuport.reference as ref
+
+    a = tmp_path / "a"
+    b = tmp_path / "b"
+    _make_fake_drop(a)
+    _make_fake_drop(b)
+
+    cmp = ref.compare_drops(a, b)
+    assert cmp.agree is True
+    assert cmp.problems == []
+    assert cmp.notes == []
+
+
+def test_compare_drops_bit_flip(tmp_path):
+    import cuport.reference as ref
+
+    a = tmp_path / "a"
+    b = tmp_path / "b"
+    _make_fake_drop(a, stdout="CUPORT y u32 2 00000001 00000002\nCUPORT-DONE\n")
+    _make_fake_drop(b, stdout="CUPORT y u32 2 00000001 00000003\nCUPORT-DONE\n")
+
+    cmp = ref.compare_drops(a, b)
+    assert cmp.agree is False
+    assert any("buffer y" in p for p in cmp.problems)
+
+
+def test_compare_drops_printf_order(tmp_path):
+    import cuport.reference as ref
+
+    a = tmp_path / "a"
+    b = tmp_path / "b"
+    stdout_a = "line 1\nline 2\nCUPORT a u32 1 00000001\nCUPORT-DONE\n"
+    stdout_b = "line 2\nline 1\nCUPORT a u32 1 00000001\nCUPORT-DONE\n"
+    _make_fake_drop(a, stdout=stdout_a)
+    _make_fake_drop(b, stdout=stdout_b)
+
+    cmp = ref.compare_drops(a, b)
+    assert cmp.agree is True
+    assert cmp.problems == []
+
+
+def test_compare_drops_timing_lines(tmp_path):
+    import cuport.reference as ref
+
+    a = tmp_path / "a"
+    b = tmp_path / "b"
+    stdout_a = "timing chain64_ms median=1.23\nCUPORT a u32 1 00000001\nCUPORT-DONE\n"
+    stdout_b = "timing chain64_ms median=4.56\nCUPORT a u32 1 00000001\nCUPORT-DONE\n"
+    _make_fake_drop(a, stdout=stdout_a)
+    _make_fake_drop(b, stdout=stdout_b)
+
+    cmp = ref.compare_drops(a, b)
+    assert cmp.agree is True
+    assert cmp.problems == []
+
+
+def test_compare_drops_stderr_note(tmp_path):
+    import cuport.reference as ref
+
+    a = tmp_path / "a"
+    b = tmp_path / "b"
+    _make_fake_drop(a, stderr="warning: host compiler A\n")
+    _make_fake_drop(b, stderr="warning: host compiler B\n")
+
+    cmp = ref.compare_drops(a, b)
+    assert cmp.agree is True
+    assert cmp.problems == []
+    assert cmp.notes == ["stderr differs"]
+
+
+def test_compare_drops_run_exit(tmp_path):
+    import cuport.reference as ref
+
+    a = tmp_path / "a"
+    b = tmp_path / "b"
+    _make_fake_drop(a, run_exit=0)
+    _make_fake_drop(b, run_exit=1)
+
+    cmp = ref.compare_drops(a, b)
+    assert cmp.agree is False
+    assert any("run exit" in p for p in cmp.problems)
+
+
+def test_compare_drops_missing_done(tmp_path):
+    import cuport.reference as ref
+
+    a = tmp_path / "a"
+    b = tmp_path / "b"
+    _make_fake_drop(a, stdout="CUPORT a u32 1 00000001\nCUPORT-DONE\n")
+    _make_fake_drop(b, stdout="CUPORT a u32 1 00000001\n")
+
+    cmp = ref.compare_drops(a, b)
+    assert cmp.agree is False
+    assert any("CUPORT-DONE" in p for p in cmp.problems)
+
+
