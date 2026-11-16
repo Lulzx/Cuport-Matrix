@@ -1,0 +1,7 @@
+id: fp-semantics/fast-fdividef-001
+family: fp-semantics
+features: [fast_math_intrinsics]
+oracle: cpu-reference
+tolerance: "ulp:2"
+expect: output
+timeout_s: 60
