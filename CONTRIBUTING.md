@@ -44,11 +44,14 @@ tool pin and hardware description.
 
 ## Work split (milestone v0)
 
-Status as of 2026-11-16. ✅ = done and merged on `main`, ❌ = not started or
-not merged. Owners are chosen by hardware: Vivian runs the M6 (the only Apple
-lane) and an RTX 4090; Guru owns the NVIDIA reference work on the RTX 4500
-Ada. Both NVIDIA cards are Ada (sm_89), so reference vectors from either are
-comparable.
+Status as of 2026-11-16. ✅ = done (merged on `main`, or on the named branch
+awaiting merge), ⏳ = running, ❌ = not started. Owners are chosen by
+hardware: Vivian runs the M6 (the only Apple lane) and two RTX 4090s; Guru has
+the RTX 4500 Ada. All three NVIDIA cards are Ada (sm_89), so reference vectors
+from any of them are comparable.
+
+Guru's former items 5-7 (two-card check, fast-math, stream timings) were done
+on Vivian's RTX 4090s and moved to Vivian's table.
 
 ### Vivian (M6 + RTX 4090)
 
@@ -63,11 +66,11 @@ comparable.
 | 7 | Re-run all 40 probes on `m6-12c` for both tools once families 5-8 land | ❌ |
 | 8 | Self-hosted M6 runner registered and the commented lane in `.github/workflows/matrix.yml` enabled | ❌ |
 | 9 | Divergence catalogue (`docs/`) and upstream issues for every `undocumented-divergence` | ❌ |
-| 10 | Family `fp-semantics` (6 probes: fma contraction, fast-math, denormals, FP64 emulation, half/bf16, rounding modes) | ❌ |
-| 11 | Family `streams-events` (4 probes: stream ordering, event timing, async copy overlap, default-stream sync) | ❌ |
-| 12 | Hosted `paravirtual` lane: replace the TODOs in `.github/workflows/matrix.yml` with a real run that writes `results/<tool>/paravirtual/<date>.json` | ❌ |
-| 13 | Scoreboard generator (Markdown from `results/`) | ❌ |
-| 14 | Hosted-vs-M6 disagreement rate reported as a number in the scoreboard | ❌ |
+| 10 | Stock `nvcc` adapter and the `refdrop` / `refcompare` runner commands, so NVIDIA reference drops are reproducible from the repo | ✅ `nvidia-refs` |
+| 11 | Two-card check: RTX 4090 drops (`reference/rtx4090-cuda12.6/`) for every probe with a reference. All 9 match the 4500 Ada drops, and all 14 match a second RTX 4090 | ✅ `nvidia-refs` |
+| 12 | `fp-semantics` fast-math probes `fast-sinf-001`, `fast-expf-001`, `fast-fdividef-001` (CPU reference, CUDA's documented bound as tolerance) with RTX 4090 drops | ✅ `nvidia-refs` |
+| 13 | Full-range sweep of `__sinf`, `__expf`, `__fdividef`, `sinf`, `expf` on the RTX 4090 (`tools/fastmath-sweep/`), summaries committed under `tools/fastmath-sweep/results/` | ⏳ |
+| 14 | `streams-events` probes `stream-ordering-001` and `async-memcpy-overlap-001` with RTX 4090 reference timings (`timing ` lines in the drops) | ✅ `nvidia-refs` |
 | 15 | Review and merge Guru's family 7-8 PRs; Guru reviews Vivian's family 5-6 PRs | ❌ |
 
 ### Guru (RTX 4500 Ada)
@@ -78,9 +81,12 @@ comparable.
 | 2 | Family `limits-refusals` (5 probes: inline PTX, oversized shared, cooperative grid sync, texture object, dynamic parallelism; `expect: either`) | ✅ |
 | 3 | Capture stock `nvcc` output on the 4500 Ada for every `limits-refusals` probe and commit it as the reference (`reference/rtx4500ada-cuda13.5/`; all five build and match their oracle bit-exact, so NVIDIA is the `expect: either` success arm) | ✅ |
 | 4 | Reference vectors on the 4500 Ada for `device-services` (`printf` formatting, `assert` text) with `nvidia-smi` and driver version | ✅ |
-| 5 | Fast-math and libdevice ulp sweeps: full-range `__sinf`, `__expf`, `__fdividef` outputs committed as `reference-vector` oracles | ❌ |
-| 6 | Run every reference vector on two NVIDIA cards and confirm they agree bit-for-bit before committing (run-to-run determinism check) | ❌ |
-| 7 | `async_memcpy_overlap` and `stream_ordering` reference timings on NVIDIA, so the oracle has a documented NVIDIA baseline | ❌ |
+| 5 | Family `fp-semantics`, remaining 5 probes: fma contraction, denormals, FP64 emulation, half/bf16, rounding modes (fast-math is done) | ❌ |
+| 6 | Family `streams-events`, remaining 2 probes: event timing, default-stream sync | ❌ |
+| 7 | 4500 Ada drops for the new `fp-semantics` and `streams-events` probes, checked with `refcompare` against `rtx4090-cuda12.6` | ❌ |
+| 8 | Hosted `paravirtual` lane: replace the TODOs in `.github/workflows/matrix.yml` with a real run that writes `results/<tool>/paravirtual/<date>.json` | ❌ |
+| 9 | Scoreboard generator (Markdown from `results/`) | ❌ |
+| 10 | Hosted-vs-M6 disagreement rate reported as a number in the scoreboard | ❌ |
 
 The 4500 Ada box runs CUDA 13.5 (nvcc V13.5.37) with MSVC 14.44 on driver
 596.71. The RTX 4090 boxes run nvcc 12.6 (V12.6.20) with gcc 12.3 on drivers
