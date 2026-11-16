@@ -69,7 +69,7 @@ on Vivian's RTX 4090s and moved to Vivian's table.
 | 10 | Stock `nvcc` adapter and the `refdrop` / `refcompare` runner commands, so NVIDIA reference drops are reproducible from the repo | ✅ |
 | 11 | Two-card check: RTX 4090 drops (`reference/rtx4090-cuda12.6/`) for every probe with a reference. All 9 match the 4500 Ada drops, and all 14 match a second RTX 4090 | ✅ |
 | 12 | `fp-semantics` fast-math probes `fast-sinf-001`, `fast-expf-001`, `fast-fdividef-001` (CPU reference, CUDA's documented bound as tolerance) with RTX 4090 drops | ✅ |
-| 13 | Full-range sweep of `__sinf`, `__expf`, `__fdividef`, `sinf`, `expf` on the RTX 4090 (`tools/fastmath-sweep/`), summaries committed under `tools/fastmath-sweep/results/` | ⏳ |
+| 13 | Full-range sweep of `__sinf`, `__expf`, `__fdividef`, `sinf`, `expf` on the RTX 4090 (`tools/fastmath-sweep/`), summaries committed under `tools/fastmath-sweep/results/` | ✅ |
 | 14 | `streams-events` probes `stream-ordering-001` and `async-memcpy-overlap-001` with RTX 4090 reference timings (`timing ` lines in the drops) | ✅ |
 | 15 | Review and merge Guru's family 7-8 PRs; Guru reviews Vivian's family 5-6 PRs. Families 7-8 merged in #4; families 5-6 went in with #2 and #3 without a separate review; work now goes straight to `main` | ✅ |
 
