@@ -6,7 +6,7 @@ from cuport_oracle import Buffer, Lcg, bits_f32, f32
 
 ID = "fp-semantics/fast-expf-001"
 N = 4096
-SCALE = 0.84
+SCALE = f32(0.84)  # the float constant 0.84f used by probe.cu
 
 
 def expected():

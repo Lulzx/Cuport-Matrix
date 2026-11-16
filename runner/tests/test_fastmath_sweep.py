@@ -146,3 +146,17 @@ def test_accumulate_nonfinite_mismatch():
     # got[3] is +Inf vs +Inf: match
     # got[4] is NaN vs NaN: match
     assert stats["in_domain"]["nonfinite_mismatch"] == 3
+
+
+def test_fast_expf_oracle_scale_matches_probe_float():
+    # probe.cu scales by the float constant 0.84f; the oracle must use the same value.
+    import importlib.util
+    import pathlib
+    import struct
+
+    path = pathlib.Path(__file__).resolve().parents[2] / "probes/fp-semantics/fast-expf-001/oracle.py"
+    spec = importlib.util.spec_from_file_location("fast_expf_oracle", path)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    assert mod.SCALE == struct.unpack("<f", struct.pack("<f", 0.84))[0]
+
