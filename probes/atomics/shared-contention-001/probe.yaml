@@ -1,0 +1,7 @@
+id: atomics/shared-contention-001
+family: atomics
+features: [shared_atomic_contention]
+oracle: cpu-reference
+tolerance: bit-exact
+expect: output
+timeout_s: 60
