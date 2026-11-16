@@ -61,13 +61,17 @@ driver) goes to single-device reference drops and diagnostics capture.
 | 4 | Family `warp-primitives` (6 probes) | ✅ |
 | 5 | Family `atomics` (5 probes) | ✅ |
 | 6 | First `m6-12c` rows for CuMetal and mvcc | ✅ |
-| 7 | Family `device-services` (4 probes: `printf`, `clock64`, `assert`, device `malloc/free`) | ❌ |
-| 8 | Family `limits-refusals` (5 probes, `expect: refusal`) | ❌ |
+| 7 | Family `device-services` (4 probes: `printf`, `clock64`, `assert`, device `malloc/free`) | ✅ |
+| 8 | Family `limits-refusals` (5 probes: inline PTX, oversized shared, cooperative grid sync, texture object, dynamic parallelism; `expect: either`) | ✅ |
 | 9 | Capture stock `nvcc` diagnostics on the 4500 Ada for every `limits-refusals` probe and commit them as the refusal reference | ❌ |
 | 10 | Reference vectors on the 4500 Ada for `device-services` (`printf` formatting, `assert` text) with `nvidia-smi` and driver version | ❌ |
 | 11 | Re-run all 40 probes on `m6-12c` for both tools once families 5-8 land | ❌ |
 | 12 | Self-hosted M6 runner registered and the commented lane in `.github/workflows/matrix.yml` enabled | ❌ |
 | 13 | Divergence catalogue (`docs/`) and upstream issues for every `undocumented-divergence` | ❌ |
+
+Items 9 and 10 are blocked until the CUDA toolkit (`nvcc`) and MSVC are
+installed on the 4500 Ada machine; the driver (596.71) is present but no
+compiler is. Items 11-13 need the M6.
 
 ### Vivian (2x RTX 4090)
 
@@ -88,6 +92,8 @@ driver) goes to single-device reference drops and diagnostics capture.
 - Commit the probe's raw `CUPORT` output under `probes/<family>/<id>/reference/`
   with `nvidia-smi -q` driver and CUDA version, the `nvcc --version` line, and
   the exact command. Label the oracle `reference-vector`.
+- `limits-refusals/dynamic-parallelism-001` needs `-rdc=true -lcudadevrt` on
+  stock `nvcc`; record both flags with its reference drop.
 - Never commit fatbins, PTX, SASS or `cuobjdump` output (legal note in
   `docs/survey-2026-11-15.md`, section 5).
 - A reference vector from a 4090 and one from the 4500 Ada must match. If they
