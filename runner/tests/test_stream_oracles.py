@@ -26,13 +26,20 @@ def test_stream_ordering_probe_and_oracle():
     assert buf.dtype == "u32"
     assert len(buf.values) == 65536
 
-    # Verify first element mathematically:
+    # Each launch k maps x -> (x ^ (k * 0x9E3779B9)) * 0x01000193 (mod 2^32), which
+    # does not commute across k, so a reordered chain gives a different result.
     import cuport_oracle as co
-    lcg = co.Lcg("streams-events/stream-ordering-001")
-    first_in = lcg.next_u32()
-    # sum_{k=0..63} k * 0x9E3779B9 = 2016 * 0x9E3779B9 = 0xf4de90e0 (mod 2^32)
-    expected_first = (first_in + 0xF4DE90E0) & 0xFFFFFFFF
-    assert buf.values[0] == expected_first
+    M = 0xFFFFFFFF
+
+    def chain(x, order):
+        for k in order:
+            x = ((x ^ ((k * 0x9E3779B9) & M)) * 0x01000193) & M
+        return x
+
+    first_in = co.Lcg("streams-events/stream-ordering-001").next_u32()
+    assert buf.values[0] == chain(first_in, range(64))
+    assert buf.values[0] != chain(first_in, [1, 0, *range(2, 64)])
+    assert buf.values[0] != chain(first_in, reversed(range(64)))
 
 
 def test_async_memcpy_overlap_probe_and_oracle():
@@ -66,3 +73,8 @@ def test_async_memcpy_overlap_probe_and_oracle():
     expected_first = (first_in * 2654435761) & 0xFFFFFFFF
     assert sample.values[0] == expected_first
 
+    # The oracle skips ahead 1024 LCG draws per sample; check against plain draws.
+    g = co.Lcg("streams-events/async-memcpy-overlap-001")
+    draws = [g.next_u32() for _ in range(3 * 1024 + 1)]
+    for j in (1, 2, 3):
+        assert sample.values[j] == (draws[j * 1024] * 2654435761) & 0xFFFFFFFF

@@ -9,10 +9,10 @@ static const uint32_t KERNEL_COUNT = 64;
 static const uint32_t MULTIPLIER = 0x9E3779B9u;
 static const int TIMING_REPS = 20;
 
-__global__ void add_k(uint32_t *data, uint32_t n, uint32_t delta) {
+__global__ void step_k(uint32_t *data, uint32_t n, uint32_t key) {
     uint32_t i = blockIdx.x * blockDim.x + threadIdx.x;
     if (i < n) {
-        data[i] += delta;
+        data[i] = (data[i] ^ key) * 0x01000193u;
     }
 }
 
@@ -32,7 +32,7 @@ int main() {
 
     // Correctness run: 64 dependent launches in one non-default stream
     for (uint32_t k = 0; k < KERNEL_COUNT; ++k) {
-        add_k<<<blocks, threads, 0, stream>>>(d_data, N, k * MULTIPLIER);
+        step_k<<<blocks, threads, 0, stream>>>(d_data, N, k * MULTIPLIER);
     }
     CUPORT_CHECK(cudaGetLastError());
 
@@ -53,7 +53,7 @@ int main() {
     for (int rep = 0; rep < TIMING_REPS; ++rep) {
         CUPORT_CHECK(cudaEventRecord(start, stream));
         for (uint32_t k = 0; k < KERNEL_COUNT; ++k) {
-            add_k<<<blocks, threads, 0, stream>>>(d_data, N, k * MULTIPLIER);
+            step_k<<<blocks, threads, 0, stream>>>(d_data, N, k * MULTIPLIER);
         }
         CUPORT_CHECK(cudaEventRecord(stop, stream));
         CUPORT_CHECK(cudaEventSynchronize(stop));
