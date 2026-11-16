@@ -83,3 +83,98 @@ def test_nvcc_adapter_arch_detection(monkeypatch, tmp_path):
 
     adapter.compile(probe, out, 10.0)
     assert "-arch=sm_89" in calls[-1]
+
+
+def test_write_drop_creates_files_and_ordered_meta(tmp_path):
+    import cuport.reference as ref
+
+    drop_dir = tmp_path / "drops" / "p1"
+    repo_root = tmp_path / "repo"
+    repo_root.mkdir()
+
+    compile_cmd = [
+        "nvcc",
+        "-std=c++17",
+        "-arch=sm_89",
+        "-I",
+        str(repo_root / "probes" / "common"),
+        "-o",
+        str(repo_root / "build" / "probe"),
+        str(repo_root / "probes" / "family" / "p1" / "probe.cu"),
+    ]
+    compile_step = StepResult(compile_cmd, 0, "build out\n", "build err\n", 0.1, False)
+    run_step = StepResult(["probe"], 0, "run out\n", "run err\n", 0.05, False)
+
+    env = {
+        "gpu": "NVIDIA GeForce RTX 4090 (sm_89)",
+        "driver": "595.99 (nvidia-smi reports CUDA 12.6)",
+        "nvcc": "Cuda compilation tools, release 12.6, V12.6.20",
+        "host": "gcc (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0",
+        "repo_commit": "abcdef1234567890",
+        "date": "2026-11-16",
+        "root": repo_root,
+    }
+
+    ref.write_drop(drop_dir, "family/p1", compile_step, run_step, env)
+
+    assert (drop_dir / "output.txt").read_text() == "run out\n"
+    assert (drop_dir / "stderr.txt").read_text() == "run err\n"
+    assert (drop_dir / "build.log").read_text() == "build out\nbuild err\n"
+
+    meta_lines = (drop_dir / "meta.txt").read_text().splitlines()
+    expected_keys = [
+        "probe:",
+        "gpu:",
+        "driver:",
+        "nvcc:",
+        "host compiler:",
+        "command:",
+        "build exit:",
+        "run exit:",
+        "date:",
+        "repo commit:",
+        "seed:",
+    ]
+    actual_keys = [line.split(":", 1)[0] + ":" for line in meta_lines]
+    assert actual_keys == expected_keys
+
+    meta_dict = dict(line.split(": ", 1) for line in meta_lines)
+    assert meta_dict["probe"] == "family/p1"
+    assert meta_dict["gpu"] == "NVIDIA GeForce RTX 4090 (sm_89)"
+    assert meta_dict["driver"] == "595.99 (nvidia-smi reports CUDA 12.6)"
+    assert meta_dict["nvcc"] == "Cuda compilation tools, release 12.6, V12.6.20"
+    assert meta_dict["host compiler"] == "gcc (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0"
+    assert "probes/common" in meta_dict["command"]
+    assert str(repo_root) not in meta_dict["command"]  # must be repo-relative
+    assert meta_dict["build exit"] == "0"
+    assert meta_dict["run exit"] == "0"
+    assert meta_dict["date"] == "2026-11-16"
+    assert meta_dict["repo commit"] == "abcdef1234567890"
+    assert "FNV-1a" in meta_dict["seed"]
+
+
+def test_write_drop_without_run_step(tmp_path):
+    import cuport.reference as ref
+
+    drop_dir = tmp_path / "drops" / "failed_compile"
+    compile_step = StepResult(["nvcc", "p.cu"], 1, "", "syntax error\n", 0.1, False)
+
+    env = {
+        "gpu": "NVIDIA RTX 4500 Ada (sm_89)",
+        "driver": "596.71 (nvidia-smi reports CUDA 13.2)",
+        "nvcc": "Cuda compilation tools, release 13.5",
+        "host": "MSVC 14.44",
+        "repo_commit": "123456",
+        "date": "2026-11-16",
+    }
+
+    ref.write_drop(drop_dir, "family/p2", compile_step, None, env)
+
+    assert (drop_dir / "output.txt").read_text() == ""
+    assert (drop_dir / "stderr.txt").read_text() == ""
+    assert (drop_dir / "build.log").read_text() == "syntax error\n"
+
+    meta_dict = dict(line.split(": ", 1) for line in (drop_dir / "meta.txt").read_text().splitlines())
+    assert meta_dict["build exit"] == "1"
+    assert meta_dict["run exit"] == "not run"
+
