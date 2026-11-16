@@ -1,0 +1,7 @@
+id: launch-geometry/dim3-3d-001
+family: launch-geometry
+features: [blockDim_gridDim_3d]
+oracle: spec
+tolerance: bit-exact
+expect: output
+timeout_s: 60

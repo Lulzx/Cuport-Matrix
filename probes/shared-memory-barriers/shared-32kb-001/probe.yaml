@@ -1,0 +1,7 @@
+id: shared-memory-barriers/shared-32kb-001
+family: shared-memory-barriers
+features: [shared_limit_32kb_boundary]
+oracle: spec
+tolerance: bit-exact
+expect: either
+timeout_s: 60

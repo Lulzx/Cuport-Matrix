@@ -45,7 +45,7 @@ One JSON file per `results/<tool>/<hardware>/<date>.json`:
 {
   "schema": 1,
   "tool": {"id": "cumetal", "version": "v0.8.0", "commit": "<sha>"},
-  "hardware": {"id": "m6-12c", "macos": "26.1 (25B...)", "profiler": "<system_profiler excerpt>"},
+  "hardware": {"id": "m6-12c", "macos": "27.2 (26B123)", "profiler": "<system_profiler excerpt>"},
   "date": "2026-12-01",
   "runner": {"command": "<exact invocation>", "duration_s": 1234},
   "cells": [

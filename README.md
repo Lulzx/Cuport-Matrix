@@ -30,8 +30,8 @@ vector. No NVIDIA GPU is required to run the matrix.
 
 | Lane | Hardware id | Notes |
 |---|---|---|
-| Self-hosted | `m6-12c` | Apple M6 Mac mini, 12-core GPU. Primary target. |
-| GitHub-hosted | `paravirtual` | `macos-26` runner, "Apple Paravirtual device". A feature subset of real silicon; rows are kept separate. |
+| Self-hosted | `m6-12c` | Apple M6 Mac mini, 12-core GPU, macOS 27.2 (26B123). Primary target. |
+| GitHub-hosted | `paravirtual` | `xcode-27` runner (macOS 27, arm64), "Apple Paravirtual device". A feature subset of real silicon; rows are kept separate. |
 | Community | `m1` … `m5-pro` | Rows submitted by PR with hardware evidence attached. |
 
 ## Repository layout

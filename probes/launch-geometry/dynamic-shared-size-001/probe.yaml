@@ -1,0 +1,7 @@
+id: launch-geometry/dynamic-shared-size-001
+family: launch-geometry
+features: [dynamic_shared_size_param]
+oracle: cpu-reference
+tolerance: bit-exact
+expect: output
+timeout_s: 60

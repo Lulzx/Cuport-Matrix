@@ -1,0 +1,7 @@
+id: launch-geometry/thread-block-index-001
+family: launch-geometry
+features: [threadIdx_blockIdx_mapping]
+oracle: spec
+tolerance: bit-exact
+expect: output
+timeout_s: 60
