@@ -80,3 +80,19 @@ entries:
     reference: https://github.com/Lulzx/cuda-metal/blob/v0.8.0/docs/fp64-policy.md?plain=1#L17-L34
     upstream: null
     notes: "Only the double buffers fail: default --fp64=fast48 keeps the binary32 exponent envelope, so double subnormals become zero; float subnormals are kept; bit-exact with --fp64=ieee64"
+
+  - tool: cumetal
+    probe: fp-semantics/fma-contraction-001
+    raw_class: silently-wrong
+    class: undocumented-divergence
+    reference: https://github.com/Lulzx/cuda-metal/blob/v0.8.0/compiler/ir/src/nvvm_importer.cpp#L1966-L1969
+    upstream: https://github.com/Lulzx/cuda-metal/issues/208
+    notes: "__fadd_rn(__fmul_rn(a, b), c) is fused into one FMA; __nv_fmul_rn/__nv_fadd_rn are imported as plain mul/add and then contracted"
+
+  - tool: cumetal
+    probe: streams-events/event-timing-001
+    raw_class: silently-wrong
+    class: undocumented-divergence
+    reference: https://github.com/Lulzx/cuda-metal/blob/v0.8.0/runtime/rt/cuda_runtime.cpp#L6051-L6061
+    upstream: https://github.com/Lulzx/cuda-metal/issues/209
+    notes: "cudaEventElapsedTime returns cudaErrorInvalidValue (1) instead of cudaErrorInvalidResourceHandle (400) for unrecorded and timing-disabled events"
