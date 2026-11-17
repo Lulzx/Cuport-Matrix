@@ -9,18 +9,18 @@ divergence is explained in `docs/divergences.md`.
 
 | Tool | Hardware | Date | Repo commit | bit-exact | within-tolerance | documented-divergence | undocumented-divergence | refused-with-diagnostic | silently-wrong | crash-hang | not-run |
 |---|---|---|---|--:|--:|--:|--:|--:|--:|--:|--:|
-| mvcc v1.3.0 | `m6-12c` | [2026-11-16](../results/mvcc/m6-12c/2026-11-16.json) | `0512216` | 24 | 2 | 1 | 2 | 6 | 0 | 0 | 7 |
+| mvcc v1.3.0 | `m6-12c` | [2026-11-17](../results/mvcc/m6-12c/2026-11-17.json) | `49718db` | 29 | 2 | 1 | 2 | 8 | 0 | 0 | 0 |
 | mvcc v1.3.0 | `paravirtual` | [2026-11-17](../results/mvcc/paravirtual/2026-11-17.json) | `675e85a` | 2 | 0 | 1 | 2 | 8 | 29 | 0 | 0 |
-| cumetal v0.8.0 | `m6-12c` | [2026-11-16](../results/cumetal/m6-12c/2026-11-16.json) | `0512216` | 25 | 2 | 1 | 3 | 4 | 0 | 0 | 7 |
+| cumetal v0.8.0 | `m6-12c` | [2026-11-17](../results/cumetal/m6-12c/2026-11-17.json) | `49718db` | 27 | 2 | 3 | 3 | 5 | 2 | 0 | 0 |
 | cumetal v0.8.0 | `paravirtual` | [2026-11-17](../results/cumetal/paravirtual/2026-11-17.json) | `675e85a` | 26 | 2 | 1 | 3 | 5 | 5 | 0 | 0 |
 
 ## Milestone v0 criteria
 
 | Criterion | Target | Now |
 |---|---|---|
-| Cells classified (not `not-run`) | at least 90 % of 42 probes x 2 tools x 2 lanes = 168 | 154 of 168 (91.7 %) |
+| Cells classified (not `not-run`) | at least 90 % of 42 probes x 2 tools x 2 lanes = 168 | 168 of 168 (100.0 %) |
 | Undocumented divergences acknowledged upstream | at least 3 | 5 issues |
-| Hosted-vs-M6 disagreement rate | reported as a number | 26 of 70 probes (37.1 %) |
+| Hosted-vs-M6 disagreement rate | reported as a number | 32 of 84 probes (38.1 %) |
 
 ## Hosted-vs-M6 disagreement
 
@@ -31,9 +31,9 @@ otherwise; it is never folded into the M6 result.
 
 | Tool | Compared | Differ | Rate |
 |---|--:|--:|--:|
-| mvcc | 35 | 25 | 71.4 % |
-| cumetal | 35 | 1 | 2.9 % |
-| **all** | 70 | 26 | **37.1 %** |
+| mvcc | 42 | 29 | 69.0 % |
+| cumetal | 42 | 3 | 7.1 % |
+| **all** | 84 | 32 | **38.1 %** |
 
 | Tool | Probe | `paravirtual` | `m6-12c` |
 |---|---|---|---|
@@ -42,9 +42,12 @@ otherwise; it is never folded into the M6 result.
 | mvcc | `atomics/cas-loop-001` | silently-wrong | bit-exact |
 | mvcc | `atomics/min-max-unsigned-001` | silently-wrong | bit-exact |
 | mvcc | `atomics/shared-contention-001` | silently-wrong | bit-exact |
+| mvcc | `fp-semantics/denormals-001` | silently-wrong | bit-exact |
 | mvcc | `fp-semantics/fast-expf-001` | silently-wrong | within-tolerance |
 | mvcc | `fp-semantics/fast-fdividef-001` | silently-wrong | bit-exact |
 | mvcc | `fp-semantics/fast-sinf-001` | silently-wrong | within-tolerance |
+| mvcc | `fp-semantics/fma-contraction-001` | silently-wrong | bit-exact |
+| mvcc | `fp-semantics/half-bf16-001` | silently-wrong | bit-exact |
 | mvcc | `launch-geometry/dim3-3d-001` | silently-wrong | bit-exact |
 | mvcc | `launch-geometry/dynamic-shared-size-001` | silently-wrong | bit-exact |
 | mvcc | `launch-geometry/large-grid-001` | silently-wrong | bit-exact |
@@ -55,6 +58,7 @@ otherwise; it is never folded into the M6 result.
 | mvcc | `shared-memory-barriers/shared-32kb-001` | silently-wrong | bit-exact |
 | mvcc | `shared-memory-barriers/static-shared-001` | silently-wrong | bit-exact |
 | mvcc | `shared-memory-barriers/syncthreads-reduction-001` | silently-wrong | bit-exact |
+| mvcc | `streams-events/default-stream-sync-001` | silently-wrong | bit-exact |
 | mvcc | `streams-events/stream-ordering-001` | silently-wrong | bit-exact |
 | mvcc | `warp-primitives/ballot-any-all-001` | silently-wrong | bit-exact |
 | mvcc | `warp-primitives/match-any-001` | silently-wrong | bit-exact |
@@ -62,6 +66,8 @@ otherwise; it is never folded into the M6 result.
 | mvcc | `warp-primitives/shfl-variants-001` | silently-wrong | bit-exact |
 | mvcc | `warp-primitives/shfl-xor-width-001` | silently-wrong | bit-exact |
 | mvcc | `warp-primitives/warp-reduce-add-001` | silently-wrong | bit-exact |
+| cumetal | `fp-semantics/denormals-001` | silently-wrong | documented-divergence |
+| cumetal | `fp-semantics/fp64-emulation-001` | silently-wrong | documented-divergence |
 | cumetal | `limits-refusals/texture-object-001` | silently-wrong | bit-exact |
 
 ## Probe matrix
@@ -84,14 +90,14 @@ probe (`probes/<family>/<id>/reference/`); every drop matches the probe's oracle
 | `malloc-free-001` | refused | refused | exact | exact | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
 | `printf-001` | doc-div | doc-div | refused | refused | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
 | **fp-semantics** | | | | | |
-| `denormals-001` | · | **WRONG** | · | **WRONG** | rtx4500ada-cuda13.5 |
+| `denormals-001` | exact | **WRONG** | doc-div | **WRONG** | rtx4500ada-cuda13.5 |
 | `fast-expf-001` | tol | **WRONG** | tol | tol | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
 | `fast-fdividef-001` | exact | **WRONG** | exact | exact | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
 | `fast-sinf-001` | tol | **WRONG** | tol | tol | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
-| `fma-contraction-001` | · | **WRONG** | · | **WRONG** | rtx4500ada-cuda13.5 |
-| `fp64-emulation-001` | · | refused | · | **WRONG** | rtx4500ada-cuda13.5 |
-| `half-bf16-001` | · | **WRONG** | · | refused | rtx4500ada-cuda13.5 |
-| `rounding-modes-001` | · | refused | · | exact | rtx4500ada-cuda13.5 |
+| `fma-contraction-001` | exact | **WRONG** | **WRONG** | **WRONG** | rtx4500ada-cuda13.5 |
+| `fp64-emulation-001` | refused | refused | doc-div | **WRONG** | rtx4500ada-cuda13.5 |
+| `half-bf16-001` | exact | **WRONG** | refused | refused | rtx4500ada-cuda13.5 |
+| `rounding-modes-001` | refused | refused | exact | exact | rtx4500ada-cuda13.5 |
 | **launch-geometry** | | | | | |
 | `dim3-3d-001` | exact | **WRONG** | exact | exact | · |
 | `dynamic-shared-size-001` | exact | **WRONG** | exact | exact | · |
@@ -112,8 +118,8 @@ probe (`probes/<family>/<id>/reference/`); every drop matches the probe's oracle
 | `syncthreads-reduction-001` | exact | **WRONG** | exact | exact | · |
 | **streams-events** | | | | | |
 | `async-memcpy-overlap-001` | exact | exact | exact | exact | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
-| `default-stream-sync-001` | · | **WRONG** | · | exact | rtx4500ada-cuda13.5 |
-| `event-timing-001` | · | exact | · | **WRONG** | rtx4500ada-cuda13.5 |
+| `default-stream-sync-001` | exact | **WRONG** | exact | exact | rtx4500ada-cuda13.5 |
+| `event-timing-001` | exact | exact | **WRONG** | **WRONG** | rtx4500ada-cuda13.5 |
 | `stream-ordering-001` | exact | **WRONG** | exact | exact | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
 | **warp-primitives** | | | | | |
 | `ballot-any-all-001` | exact | **WRONG** | exact | exact | · |

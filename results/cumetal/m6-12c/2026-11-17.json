@@ -1,0 +1,457 @@
+{
+  "schema": 1,
+  "tool": {
+    "id": "cumetal",
+    "version": "v0.8.0",
+    "commit": "6651796af080ee9d869dddcd888ee158450e6a68"
+  },
+  "hardware": {
+    "id": "m6-12c",
+    "macos": "27.2 (26B123)",
+    "profiler": "Chipset Model: Apple M6; Total Number of Cores: 12; Metal Support: Metal 4"
+  },
+  "date": "2026-11-17",
+  "runner": {
+    "command": "python -m cuport run --tool cumetal --hardware m6-12c --jobs 12 --gpu-jobs 4 --force",
+    "duration_s": 5.1,
+    "config": {
+      "jobs": 12,
+      "gpu_jobs": 4,
+      "probe_filter": [],
+      "probes": 42,
+      "seed": "per probe: x0 = FNV-1a 64 of the probe id; LCG and draw rule in matrix/schema.md",
+      "python": "3.13.18",
+      "tool_detail": "/Users/viviansobers/.local/cuport-tools/cumetal-v0.8.0/bin/cumetalc",
+      "repo_commit": "49718dbbe332c90ce7f57db3feb9eb3a48b22c7c",
+      "repo_dirty": false
+    }
+  },
+  "cells": [
+    {
+      "feature": "atomics.atomic_64bit",
+      "probe": "atomics/atomic-64bit-001",
+      "class": "bit-exact",
+      "oracle": "cpu-reference",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": ""
+    },
+    {
+      "feature": "atomics.atomicAdd_int_float",
+      "probe": "atomics/atomic-add-001",
+      "class": "bit-exact",
+      "oracle": "cpu-reference",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": ""
+    },
+    {
+      "feature": "atomics.atomicCAS_loop",
+      "probe": "atomics/cas-loop-001",
+      "class": "bit-exact",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": ""
+    },
+    {
+      "feature": "atomics.atomicMin_Max_unsigned",
+      "probe": "atomics/min-max-unsigned-001",
+      "class": "bit-exact",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": ""
+    },
+    {
+      "feature": "atomics.shared_atomic_contention",
+      "probe": "atomics/shared-contention-001",
+      "class": "bit-exact",
+      "oracle": "cpu-reference",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": ""
+    },
+    {
+      "feature": "device-services.device_assert",
+      "probe": "device-services/assert-001",
+      "class": "documented-divergence",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": "raw silently-wrong; Device-side assert is a no-op __assert_rtn overload, so a failing assert neither stops the kernel nor returns cudaErrorAssert (710); docs/known-gaps/runtime.md also lists cudaErrorAssert as not implemented; tripped[0] got 00000000 want 00000001 (1 wrong); codes[2] got 00000000 wa",
+      "reference": "https://github.com/Lulzx/cuda-metal/blob/v0.8.0/CHANGELOG.md?plain=1#L600-L602"
+    },
+    {
+      "feature": "device-services.clock64_monotonic",
+      "probe": "device-services/clock64-001",
+      "class": "bit-exact",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": ""
+    },
+    {
+      "feature": "device-services.device_malloc_free",
+      "probe": "device-services/malloc-free-001",
+      "class": "bit-exact",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": ""
+    },
+    {
+      "feature": "device-services.device_printf",
+      "probe": "device-services/printf-001",
+      "class": "refused-with-diagnostic",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": "compile: cumetalc failed: probes/device-services/printf-001/probe.cu:15:5: typed vprintf supports tightly packed 32/64-bit scalar and pointer arguments | cumetalc failed: native AOT device compilation failed"
+    },
+    {
+      "feature": "fp-semantics.denormal_handling",
+      "probe": "fp-semantics/denormals-001",
+      "class": "documented-divergence",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": "raw silently-wrong; Only the double buffers fail: default --fp64=fast48 keeps the binary32 exponent envelope, so double subnormals become zero; float subnormals are kept; bit-exact with --fp64=ieee64; d_half[0] got 0000000000000000 want 0011b41ee21c818f; [1] got 8000000000000000 want 801c7b3adddb554",
+      "reference": "https://github.com/Lulzx/cuda-metal/blob/v0.8.0/docs/fp64-policy.md?plain=1#L17-L34"
+    },
+    {
+      "feature": "fp-semantics.fast_math_intrinsics",
+      "probe": "fp-semantics/fast-expf-001",
+      "class": "within-tolerance",
+      "oracle": "cpu-reference",
+      "tolerance": "ulp:2",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": "y: 1127 elements within ulp:2"
+    },
+    {
+      "feature": "fp-semantics.fast_math_intrinsics",
+      "probe": "fp-semantics/fast-fdividef-001",
+      "class": "bit-exact",
+      "oracle": "cpu-reference",
+      "tolerance": "ulp:2",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": ""
+    },
+    {
+      "feature": "fp-semantics.fast_math_intrinsics",
+      "probe": "fp-semantics/fast-sinf-001",
+      "class": "within-tolerance",
+      "oracle": "cpu-reference",
+      "tolerance": "abs:3.9e-7",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": "y: 1708 elements within abs:3.9e-7"
+    },
+    {
+      "feature": "fp-semantics.fma_contraction_default",
+      "probe": "fp-semantics/fma-contraction-001",
+      "class": "silently-wrong",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": "split[0] got 32b8be60 want 00000000; [2] got b3f7b244 want 00000000; [3] got 3d28d827 want 3d28d840 ... (3230 wrong)"
+    },
+    {
+      "feature": "fp-semantics.fp64_emulation_presence",
+      "probe": "fp-semantics/fp64-emulation-001",
+      "class": "documented-divergence",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": "raw silently-wrong; Default --fp64=fast48 is FP32-pair arithmetic with about 48 significand bits, so add/mul/div/sqrt/fma miss the binary64 rounding; bit-exact with --fp64=ieee64; add[0] got 406af1c88ef7b0e0 want 406af1c88ef7b0de; [1] got 3ff21f20d59ab4c0 want 3ff21f20d59ab4c8; [3] got 404d773d10b1e",
+      "reference": "https://github.com/Lulzx/cuda-metal/blob/v0.8.0/docs/fp64-policy.md?plain=1#L17-L34"
+    },
+    {
+      "feature": "fp-semantics.half_bf16_conversions",
+      "probe": "fp-semantics/half-bf16-001",
+      "class": "refused-with-diagnostic",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": "compile: /Users/viviansobers/Projects/Cuport-Matrix/probes/fp-semantics/half-bf16-001/probe.cu:6:10: fatal error: 'cuda_bf16.h' file not found | 6 | #include <cuda_bf16.h> | |          ^~~~~~~~~~~~~ | 1 error generated when compiling for host. | cumetalc failed: could not inspect native host launch stubs"
+    },
+    {
+      "feature": "fp-semantics.rounding_mode_intrinsics",
+      "probe": "fp-semantics/rounding-modes-001",
+      "class": "bit-exact",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": ""
+    },
+    {
+      "feature": "launch-geometry.blockDim_gridDim_3d",
+      "probe": "launch-geometry/dim3-3d-001",
+      "class": "bit-exact",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": ""
+    },
+    {
+      "feature": "launch-geometry.dynamic_shared_size_param",
+      "probe": "launch-geometry/dynamic-shared-size-001",
+      "class": "bit-exact",
+      "oracle": "cpu-reference",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": ""
+    },
+    {
+      "feature": "launch-geometry.launch_bounds_large_grid",
+      "probe": "launch-geometry/large-grid-001",
+      "class": "bit-exact",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": ""
+    },
+    {
+      "feature": "launch-geometry.threadIdx_blockIdx_mapping",
+      "probe": "launch-geometry/thread-block-index-001",
+      "class": "bit-exact",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": ""
+    },
+    {
+      "feature": "launch-geometry.zero_size_launch",
+      "probe": "launch-geometry/zero-size-launch-001",
+      "class": "undocumented-divergence",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": "https://github.com/Lulzx/cuda-metal/issues/207",
+      "notes": "raw silently-wrong; Zero grid or block dimension returns cudaErrorInvalidValue (1) instead of cudaErrorInvalidConfiguration (9); codes[0] got 00000001 want 00000009 (1 wrong)",
+      "reference": "https://github.com/Lulzx/cuda-metal/blob/v0.8.0/runtime/rt/cuda_runtime.cpp#L7247-L7249"
+    },
+    {
+      "feature": "limits-refusals.cooperative_groups_grid_sync",
+      "probe": "limits-refusals/cooperative-grid-sync-001",
+      "class": "refused-with-diagnostic",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": "runtime: cudaLaunchCooperativeKernel((const void *)ring, dim3(blocks), dim3(threads), args, 0, 0) 720 too many blocks in cooperative launch"
+    },
+    {
+      "feature": "limits-refusals.dynamic_parallelism",
+      "probe": "limits-refusals/dynamic-parallelism-001",
+      "class": "refused-with-diagnostic",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": "compile: /Users/viviansobers/Projects/Cuport-Matrix/probes/limits-refusals/dynamic-parallelism-001/probe.cu:20:32: error: kernel launch from __device__ or __global__ function requires relocatable device code (i.e. requires -fgpu-rdc) | 20 |     if (threadIdx.x == 0) child<<<1, blockDim.x>>>(in, out, blockIdx"
+    },
+    {
+      "feature": "limits-refusals.unsupported_intrinsic_diagnostic",
+      "probe": "limits-refusals/inline-ptx-001",
+      "class": "bit-exact",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": ""
+    },
+    {
+      "feature": "limits-refusals.oversized_shared_request",
+      "probe": "limits-refusals/oversized-shared-001",
+      "class": "undocumented-divergence",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": "https://github.com/Lulzx/cuda-metal/issues/205",
+      "notes": "raw silently-wrong; 64 KB dynamic shared launch succeeds; the size goes to setThreadgroupMemoryLength unchecked (Metal validation: length(65536) must be <= 32768); refused[0] got 00000000 want 00000001 (1 wrong); codes[0] got 00000000 want 00000001 (1 wrong); untouched[0] got 000002fe want abababab;",
+      "reference": "https://github.com/Lulzx/cuda-metal/blob/v0.8.0/runtime/metal_backend/metal_backend.mm#L3689"
+    },
+    {
+      "feature": "limits-refusals.texture_surface_refs",
+      "probe": "limits-refusals/texture-object-001",
+      "class": "bit-exact",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": ""
+    },
+    {
+      "feature": "shared-memory-barriers.dynamic_shared_extern",
+      "probe": "shared-memory-barriers/dynamic-shared-001",
+      "class": "bit-exact",
+      "oracle": "cpu-reference",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": ""
+    },
+    {
+      "feature": "shared-memory-barriers.shared_limit_32kb_boundary",
+      "probe": "shared-memory-barriers/shared-32kb-001",
+      "class": "bit-exact",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": ""
+    },
+    {
+      "feature": "shared-memory-barriers.static_shared_array",
+      "probe": "shared-memory-barriers/static-shared-001",
+      "class": "bit-exact",
+      "oracle": "cpu-reference",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": ""
+    },
+    {
+      "feature": "shared-memory-barriers.syncthreads_count_and_or",
+      "probe": "shared-memory-barriers/syncthreads-count-001",
+      "class": "refused-with-diagnostic",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": "compile: cumetalc failed: /opt/homebrew/Cellar/llvm/23.1.5_1/lib/clang/23/include/__clang_cuda_device_functions.h:525:54: unsupported LLVM/NVVM intrinsic 'llvm.nvvm.barrier.cta.red.popc.aligned.all' | cumetalc failed: native AOT device compilation failed"
+    },
+    {
+      "feature": "shared-memory-barriers.syncthreads_reduction",
+      "probe": "shared-memory-barriers/syncthreads-reduction-001",
+      "class": "bit-exact",
+      "oracle": "cpu-reference",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": ""
+    },
+    {
+      "feature": "streams-events.async_memcpy_overlap",
+      "probe": "streams-events/async-memcpy-overlap-001",
+      "class": "bit-exact",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": ""
+    },
+    {
+      "feature": "streams-events.default_stream_sync",
+      "probe": "streams-events/default-stream-sync-001",
+      "class": "bit-exact",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": ""
+    },
+    {
+      "feature": "streams-events.event_elapsed_time",
+      "probe": "streams-events/event-timing-001",
+      "class": "silently-wrong",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": "checks[6] got 00000001 want 00000190; [7] got 00000001 want 00000190 (2 wrong)"
+    },
+    {
+      "feature": "streams-events.stream_ordering",
+      "probe": "streams-events/stream-ordering-001",
+      "class": "bit-exact",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": ""
+    },
+    {
+      "feature": "warp-primitives.ballot_any_all",
+      "probe": "warp-primitives/ballot-any-all-001",
+      "class": "bit-exact",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": ""
+    },
+    {
+      "feature": "warp-primitives.match_any_sync",
+      "probe": "warp-primitives/match-any-001",
+      "class": "bit-exact",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": ""
+    },
+    {
+      "feature": "warp-primitives.lane_mask_partial_warp",
+      "probe": "warp-primitives/partial-warp-001",
+      "class": "bit-exact",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": ""
+    },
+    {
+      "feature": "warp-primitives.shfl_sync_variants",
+      "probe": "warp-primitives/shfl-variants-001",
+      "class": "bit-exact",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": ""
+    },
+    {
+      "feature": "warp-primitives.shfl_xor_width",
+      "probe": "warp-primitives/shfl-xor-width-001",
+      "class": "undocumented-divergence",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": "https://github.com/Lulzx/cuda-metal/issues/206",
+      "notes": "raw silently-wrong; __shfl_xor_sync with width < 32 returns the caller's value for partners in earlier groups; CUDA lets a lane read earlier groups; out[71] got 861250e4 want 392e73f7; [96] got 70a952a1 want 9023b5b6; [117] got df4759b7 want 392e73f7 ... (2560 wrong)",
+      "reference": "https://github.com/Lulzx/cuda-metal/blob/v0.8.0/runtime/api/cuda_runtime.h#L3037-L3042"
+    },
+    {
+      "feature": "warp-primitives.warp_reduce_add",
+      "probe": "warp-primitives/warp-reduce-add-001",
+      "class": "bit-exact",
+      "oracle": "cpu-reference",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": ""
+    }
+  ]
+}
