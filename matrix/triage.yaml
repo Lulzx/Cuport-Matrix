@@ -2,6 +2,8 @@
 # only while the runner still produces `raw_class` for that tool and probe, so
 # a fixed tool falls back to its raw result automatically.
 # undocumented-divergence requires an upstream issue (matrix/schema.md, ground rules).
+# An optional `hardware` list limits an entry to those lanes, for behaviour
+# that differs between GPUs; without it the entry applies on every lane.
 
 schema: 1
 
@@ -72,6 +74,7 @@ entries:
 
   - tool: cumetal
     probe: fp-semantics/denormals-001
+    hardware: [m6-12c]
     raw_class: silently-wrong
     class: documented-divergence
     reference: https://github.com/Lulzx/cuda-metal/blob/v0.8.0/docs/fp64-policy.md?plain=1#L17-L34

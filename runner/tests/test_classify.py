@@ -1,7 +1,7 @@
 import pathlib
 
 import cuport_oracle as co
-from cuport.classify import Cell, apply_triage, classify
+from cuport.classify import Cell, apply_triage, classify, triage_for
 from cuport.probe import load_probe
 from cuport.protocol import parse_output
 from helpers import FEATURES, GOOD, make_probe, step
@@ -96,3 +96,11 @@ def test_triage_applies_only_to_matching_raw_class():
     assert c.klass == "documented-divergence" and "raw silently-wrong" in c.notes and c.reference
     assert apply_triage(Cell("bit-exact", ""), "t", "p/x-001", entries).klass == "bit-exact"
     assert apply_triage(Cell("silently-wrong", ""), "other", "p/x-001", entries).klass == "silently-wrong"
+
+
+def test_triage_entries_can_be_scoped_to_hardware():
+    anywhere = {"tool": "t", "probe": "p/a-001"}
+    m6_only = {"tool": "t", "probe": "p/b-001", "hardware": ["m6-12c"]}
+    entries = [anywhere, m6_only]
+    assert triage_for(entries, "m6-12c") == [anywhere, m6_only]
+    assert triage_for(entries, "paravirtual") == [anywhere]

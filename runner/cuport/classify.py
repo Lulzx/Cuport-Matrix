@@ -80,6 +80,13 @@ def classify(probe, compile_step, exe, run_step, parsed, expected, text_lines) -
     return cell
 
 
+def triage_for(entries: list[dict], hardware: str) -> list[dict]:
+    """Entries that apply on `hardware`. An entry without a `hardware` list
+    applies on every lane; one with it only on the lanes it names, for
+    behaviour that differs between GPUs."""
+    return [e for e in entries if hardware in e.get("hardware", [hardware])]
+
+
 def apply_triage(cell: Cell, tool: str, probe_id: str, entries: list[dict]) -> Cell:
     """matrix/triage.yaml entries reclassify a raw class after a human read the
     tool's docs. An entry applies only while the raw class is unchanged."""

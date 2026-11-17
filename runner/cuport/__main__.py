@@ -26,7 +26,7 @@ import time
 import yaml
 
 from cuport.adapters import load_adapter
-from cuport.classify import classify
+from cuport.classify import classify, triage_for
 from cuport.probe import discover, load_features, load_oracle
 from cuport.protocol import parse_output
 from cuport.reference import collect_env, compare_drops, write_drop
@@ -144,6 +144,7 @@ def cmd_run(args) -> int:
         return 2
     triage_path = args.root / "matrix" / "triage.yaml"
     triage = (yaml.safe_load(triage_path.read_text()) or {}).get("entries", []) if triage_path.exists() else []
+    triage = triage_for(triage, args.hardware)
 
     start = time.monotonic()
     done = [0]
