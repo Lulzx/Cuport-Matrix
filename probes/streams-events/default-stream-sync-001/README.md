@@ -31,4 +31,11 @@ same source built with `--default-stream per-thread`, or with `s` made
 `cudaStreamNonBlocking`, still produced correct results in every run
 [reproduced 2026-11-17], because the driver serialised the kernels. The same
 WDDM box shows no copy/compute overlap in `async-memcpy-overlap-001` either.
-A negative control on one of the Linux RTX 4090 boxes is still to be run.
+On a Linux RTX 4090 (driver 595.99.02, nvcc 12.6 V12.6.20) the control does
+fail. Over 50 runs of each build, the probe as committed passed 50 of 50, the
+`--default-stream per-thread` build failed 8 of 50 and the copy with `s` made
+`cudaStreamNonBlocking` failed 5 of 50 [reproduced 2026-11-17]. Every failure
+was in `z` alone (448 to 18272 of 65536 elements wrong), meaning the readback
+started before `stage_c` finished. `x` and `y` were correct in all 100 runs of
+the two broken builds, so on this GPU a missing barrier before `stage_b` was
+never observed.
