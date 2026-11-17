@@ -1,27 +1,37 @@
+<div align="center">
+
 # Cuport-Matrix
 
-[![ci](https://github.com/guru-bharadwaj20/Cuport-Matrix/actions/workflows/ci.yml/badge.svg)](https://github.com/guru-bharadwaj20/Cuport-Matrix/actions/workflows/ci.yml)
-[![matrix](https://github.com/guru-bharadwaj20/Cuport-Matrix/actions/workflows/matrix.yml/badge.svg)](https://github.com/guru-bharadwaj20/Cuport-Matrix/actions/workflows/matrix.yml)
-![probes](https://img.shields.io/badge/probes-42-blue)
-![tools](https://img.shields.io/badge/tools-CuMetal%20v0.8.0%20%7C%20mvcc%20v1.3.0-informational)
-![license](https://img.shields.io/badge/license-Apache--2.0-green)
+<p>
+A conformance and divergence matrix for <strong>CUDA on Apple GPUs</strong>: one plain-CUDA probe corpus, run unchanged through several CUDA-on-Metal tools on several Apple hardware lanes, with every cell classified.
+</p>
 
-A conformance and divergence matrix for CUDA on Apple GPUs: one plain-CUDA
-probe corpus, run unchanged through several CUDA-on-Metal tools on several
-Apple hardware lanes, with every cell classified.
+[![CI](https://img.shields.io/github/actions/workflow/status/guru-bharadwaj20/Cuport-Matrix/ci.yml?style=for-the-badge&branch=main&label=CI&logo=githubactions&logoColor=white)](https://github.com/guru-bharadwaj20/Cuport-Matrix/actions/workflows/ci.yml)
+[![Matrix](https://img.shields.io/github/actions/workflow/status/guru-bharadwaj20/Cuport-Matrix/matrix.yml?style=for-the-badge&branch=main&label=Matrix&logo=githubactions&logoColor=white)](https://github.com/guru-bharadwaj20/Cuport-Matrix/actions/workflows/matrix.yml)
+[![Probes](https://img.shields.io/badge/Probes-42%20%C2%B7%208%20Families-1565C0?style=for-the-badge&labelColor=42A5F5)](probes/README.md)
+[![Tools](https://img.shields.io/badge/Tools-CuMetal%20v0.8.0%20%C2%B7%20mvcc%20v1.3.0-6A1B9A?style=for-the-badge&labelColor=AB47BC)](#what-it-does)
+[![Lanes](https://img.shields.io/badge/Apple%20Lanes-M6%20%C2%B7%20Paravirtual%20GPU-E65100?style=for-the-badge&labelColor=FF9800)](#architecture)
+[![References](https://img.shields.io/badge/NVIDIA%20References-RTX%204500%20Ada%20%C2%B7%202%C3%97%20RTX%204090-2E7D32?style=for-the-badge&labelColor=66BB6A)](probes/README.md#reference-drops)
+[![Coverage](https://img.shields.io/badge/Cells%20Classified-168%20%2F%20168-00897B?style=for-the-badge&labelColor=26A69A)](docs/scoreboard.md)
+[![Language](https://img.shields.io/badge/Language-Python%203.13%20%C2%B7%20CUDA%20C%2B%2B-1C1C1C?style=for-the-badge&labelColor=424242&logo=python&logoColor=FFD700)](runner/requirements.txt)
+[![License](https://img.shields.io/badge/License-Apache%202.0-455A64?style=for-the-badge&labelColor=78909C)](LICENSE)
 
-## Contents
+<p>
+  <a href="#what-it-does">Features</a> &bull;
+  <a href="#architecture">Architecture</a> &bull;
+  <a href="#how-a-probe-travels">Probe Flow</a> &bull;
+  <a href="#quick-start">Quick Start</a> &bull;
+  <a href="#project-status">Status</a> &bull;
+  <a href="#design-decisions">Decisions</a> &bull;
+  <a href="#repository-layout">Repository</a> &bull;
+  <a href="#documentation">Docs</a> &bull;
+  <a href="#team">Team</a> &bull;
+  <a href="#license">License</a>
+</p>
 
-- [What it does](#what-it-does)
-- [Architecture](#architecture)
-- [How a probe travels](#how-a-probe-travels)
-- [Quick start](#quick-start)
-- [Project status](#project-status)
-- [Design decisions](#design-decisions)
-- [Repository layout](#repository-layout)
-- [Documentation](#documentation)
-- [Team](#team)
-- [License](#license)
+</div>
+
+---
 
 ## What it does
 
