@@ -1,0 +1,11 @@
+probe: fp-semantics/fp64-emulation-001
+gpu: NVIDIA GeForce RTX 4090 (sm_89)
+driver: 595.99.02 (nvidia-smi reports CUDA 13.2)
+nvcc: Cuda compilation tools, release 12.6, V12.6.20
+host compiler: gcc (Ubuntu 12.3.0-1ubuntu1~22.04.3) 12.3.0
+command: /usr/local/cuda-12.6/bin/nvcc -std=c++17 -arch=sm_89 -I probes/common -o build/nvcc/fp-semantics/fp64-emulation-001/probe probes/fp-semantics/fp64-emulation-001/probe.cu
+build exit: 0
+run exit: 0
+date: 2026-11-17
+repo commit: 802b34f92cca97c3fbbc368224b40c0f0fedbc6e
+seed: per probe: x0 = FNV-1a 64 of the probe id; LCG and draw rule in matrix/schema.md
