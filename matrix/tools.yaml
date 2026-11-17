@@ -1,5 +1,5 @@
 # Tool registry for Cuport-Matrix.
-# Every entry is pinned. "latest" is not accepted (see CONTRIBUTING.md).
+# Every entry is pinned. "latest" is not accepted (matrix/schema.md, ground rules).
 # Metadata as observed on 2026-11-15; see docs/survey-2026-11-15.md section 3.
 
 schema: 1

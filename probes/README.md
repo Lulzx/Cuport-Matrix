@@ -101,6 +101,31 @@ checks agreement of build exit, run exit, `CUPORT-DONE`, `CUPORT-ERROR`, buffer
 contents, and device text (ignoring `timing ` lines and treating stderr
 differences as platform notes).
 
+### Rules for NVIDIA reference drops
+
+- A drop holds the probe's raw `CUPORT` output, the driver and CUDA version,
+  the `nvcc --version` line, the host compiler and the exact command
+  (`meta.txt`). Label the oracle `reference-vector` when the drop is the oracle.
+- Set `CUPORT_NVCC` if `nvcc` is not on `PATH`. On Windows the adapter finds
+  MSVC through `vswhere` (override with `CUPORT_NVCC_CCBIN`) and passes
+  `-Xcompiler /Zc:preprocessor`, which CCCL 13 needs.
+- Buffers must match bit-for-bit across cards and printf lines as a multiset;
+  `timing ` lines are ignored and stderr differences (paths, host compiler)
+  are reported as notes.
+- Drops from two cards of the same architecture must match. If they do not,
+  the probe is `observe_only` until the difference is explained.
+- Fast-math probes keep a `cpu-reference` oracle with CUDA's documented error
+  bound as the tolerance: NVIDIA output is not correctly rounded either, so a
+  bit-exact NVIDIA oracle would fail tools that meet the documented bound. The
+  drop records that real CUDA passes.
+- `limits-refusals/dynamic-parallelism-001` needs `-rdc=true -lcudadevrt` on
+  stock `nvcc`, and the drop's `meta.txt` records it.
+- Never commit fatbins, PTX, SASS or `cuobjdump` output.
+
+Committed drops: `rtx4500ada-cuda13.5` (RTX 4500 Ada, nvcc 13.5, MSVC 14.44,
+driver 596.71) and `rtx4090-cuda12.6` (two RTX 4090s, nvcc 12.6, gcc 12.3,
+drivers 595.99 and 580.178). All are sm_89; every pair compared agrees.
+
 ## Families (milestone v0)
 
 1. `launch-geometry`

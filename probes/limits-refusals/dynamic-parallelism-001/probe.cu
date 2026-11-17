@@ -5,7 +5,7 @@
 // because CDP2 removed device-side cudaDeviceSynchronize.
 //
 // Stock nvcc needs -rdc=true and links cudadevrt for this probe; the
-// reference-drop command must record both flags (CONTRIBUTING.md).
+// reference-drop command must record both flags (probes/README.md).
 #include "../../common/cuport.h"
 #include <vector>
 

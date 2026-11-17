@@ -1,7 +1,7 @@
 # Human triage of raw classes (matrix/schema.md). An entry reclassifies a cell
 # only while the runner still produces `raw_class` for that tool and probe, so
 # a fixed tool falls back to its raw result automatically.
-# undocumented-divergence requires an upstream issue (CONTRIBUTING.md).
+# undocumented-divergence requires an upstream issue (matrix/schema.md, ground rules).
 
 schema: 1
 

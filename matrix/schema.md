@@ -72,4 +72,20 @@ seeded with the probe id hashed by FNV-1a. The oracle uses the same stream.
 
 `[reproduced]` is the only label a result row may carry; the matrix exists to
 turn `[self-reported]` claims into `[reproduced]` rows. Claims in `docs/`
-use the full label set listed in `CONTRIBUTING.md`.
+use the full label set: `[reproduced]`, `[source]`, `[official-doc]`,
+`[paper]`, `[self-reported]`, `[secondary]`, `[inferred]` or `[unverified]`.
+Do not upgrade a label without a link to the primary evidence.
+
+## Ground rules
+
+- A probe's oracle does not depend on an NVIDIA GPU: it is the CUDA
+  specification, a CPU reference implementation, or a committed reference
+  vector whose provenance is recorded (`probes/README.md`).
+- A divergence is reported upstream before it is catalogued as
+  `undocumented-divergence`; the row links the issue (`matrix/triage.yaml`).
+- Every tool and hardware entry is pinned to a tag or commit
+  (`matrix/tools.yaml`); unpinned "latest" entries are not accepted.
+- Every row is re-creatable from the committed probe, tool pin and hardware
+  description, and records the repo commit it ran from.
+- Never commit vendor binaries, fatbins, PTX, SASS or `cuobjdump` output
+  (legal note in `docs/survey-2026-11-15.md`, section 5).
