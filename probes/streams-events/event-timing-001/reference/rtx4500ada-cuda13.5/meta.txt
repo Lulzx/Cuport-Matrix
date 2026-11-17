@@ -1,0 +1,11 @@
+probe: streams-events/event-timing-001
+gpu: NVIDIA RTX 4500 Ada Generation (sm_89)
+driver: 596.71 (nvidia-smi reports CUDA 13.2)
+nvcc: Cuda compilation tools, release 13.5, V13.5.37
+host compiler: MSVC 14.44.35207 (cl 19.44.35228), Windows 10.0.26300
+command: nvcc -ccbin 'C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\bin\Hostx64\x64' -Xcompiler /Zc:preprocessor -std=c++17 -arch=sm_89 -I probes/common -o build/nvcc/streams-events/event-timing-001/probe.exe probes/streams-events/event-timing-001/probe.cu
+build exit: 0
+run exit: 0
+date: 2026-11-17
+repo commit: 1acc6deb60f654818cc7b9c1ca807ac339dcd465
+seed: per probe: x0 = FNV-1a 64 of the probe id; LCG and draw rule in matrix/schema.md
