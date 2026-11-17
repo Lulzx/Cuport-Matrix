@@ -7,5 +7,5 @@ command: nvcc -ccbin 'C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildT
 build exit: 0
 run exit: 0
 date: 2026-11-17
-repo commit: 1acc6deb60f654818cc7b9c1ca807ac339dcd465
+repo commit: b71a09ae611ecc46850f83fa4b59cafa6f02c99b
 seed: per probe: x0 = FNV-1a 64 of the probe id; LCG and draw rule in matrix/schema.md

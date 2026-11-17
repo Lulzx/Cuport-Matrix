@@ -10,9 +10,9 @@ divergence is explained in `docs/divergences.md`.
 | Tool | Hardware | Date | Repo commit | bit-exact | within-tolerance | documented-divergence | undocumented-divergence | refused-with-diagnostic | silently-wrong | crash-hang | not-run |
 |---|---|---|---|--:|--:|--:|--:|--:|--:|--:|--:|
 | mvcc v1.3.0 | `m6-12c` | [2026-11-16](../results/mvcc/m6-12c/2026-11-16.json) | `0512216` | 24 | 2 | 1 | 2 | 6 | 0 | 0 | 7 |
-| mvcc v1.3.0 | `paravirtual` | [2026-11-17](../results/mvcc/paravirtual/2026-11-17.json) | `8d18a59` | 2 | 0 | 1 | 2 | 8 | 29 | 0 | 0 |
+| mvcc v1.3.0 | `paravirtual` | [2026-11-17](../results/mvcc/paravirtual/2026-11-17.json) | `675e85a` | 2 | 0 | 1 | 2 | 8 | 29 | 0 | 0 |
 | cumetal v0.8.0 | `m6-12c` | [2026-11-16](../results/cumetal/m6-12c/2026-11-16.json) | `0512216` | 25 | 2 | 1 | 3 | 4 | 0 | 0 | 7 |
-| cumetal v0.8.0 | `paravirtual` | [2026-11-17](../results/cumetal/paravirtual/2026-11-17.json) | `8d18a59` | 26 | 2 | 1 | 3 | 5 | 5 | 0 | 0 |
+| cumetal v0.8.0 | `paravirtual` | [2026-11-17](../results/cumetal/paravirtual/2026-11-17.json) | `675e85a` | 26 | 2 | 1 | 3 | 5 | 5 | 0 | 0 |
 
 ## Milestone v0 criteria
 

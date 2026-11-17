@@ -22,7 +22,7 @@
       "seed": "per probe: x0 = FNV-1a 64 of the probe id; LCG and draw rule in matrix/schema.md",
       "python": "3.13.17",
       "tool_detail": "Build mvcc_1.3.0_0",
-      "repo_commit": "8d18a592f2b1e0dc28cf90beae5cf7c0f8a82c06",
+      "repo_commit": "675e85a7ec53570e09c156c2bcf7e8573abf36f2",
       "repo_dirty": false
     }
   },
