@@ -1,0 +1,454 @@
+{
+  "schema": 1,
+  "tool": {
+    "id": "mvcc",
+    "version": "v1.3.0",
+    "commit": "8a814c20138132e758c0b9475dc91283ee7183b1"
+  },
+  "hardware": {
+    "id": "paravirtual",
+    "macos": "27.0.1 (26A434)",
+    "profiler": "Metal device: Apple Paravirtual device"
+  },
+  "date": "2026-11-17",
+  "runner": {
+    "command": "python -m cuport run --tool mvcc --hardware paravirtual --jobs 5 --gpu-jobs 2 --force",
+    "duration_s": 11.9,
+    "config": {
+      "jobs": 5,
+      "gpu_jobs": 2,
+      "probe_filter": [],
+      "probes": 42,
+      "seed": "per probe: x0 = FNV-1a 64 of the probe id; LCG and draw rule in matrix/schema.md",
+      "python": "3.13.17",
+      "tool_detail": "Build mvcc_1.3.0_0",
+      "repo_commit": "8d18a592f2b1e0dc28cf90beae5cf7c0f8a82c06",
+      "repo_dirty": false
+    }
+  },
+  "cells": [
+    {
+      "feature": "atomics.atomic_64bit",
+      "probe": "atomics/atomic-64bit-001",
+      "class": "silently-wrong",
+      "oracle": "cpu-reference",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": "sum[0] got 0000000000000000 want b7248b84a8ee4224; [1] got 0000000000000000 want 8b60fccc38451041; [2] got 0000000000000000 want 1161ce2340f24feb ... (4 wrong); max[0] got 0000000000000000 want fd7128a878c1aa95; [1] got 0000000000000000 want ff359069d0d74552; [2] got 0000000000000000 want feba7d5a2e"
+    },
+    {
+      "feature": "atomics.atomicAdd_int_float",
+      "probe": "atomics/atomic-add-001",
+      "class": "silently-wrong",
+      "oracle": "cpu-reference",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": "isum[0] got 00000000 want f3188c2a; [1] got 00000000 want 186843a0; [2] got 00000000 want d43e9ebe ... (16 wrong); fsum[0] got 00000000 want 46cd4000; [1] got 00000000 want 47041200; [2] got 00000000 want 46f1b800 ... (16 wrong)"
+    },
+    {
+      "feature": "atomics.atomicCAS_loop",
+      "probe": "atomics/cas-loop-001",
+      "class": "silently-wrong",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": "acc[0] got 00000000 want 82422cd8; [1] got 00000000 want 43c415db; [2] got 00000000 want 8782cc5a ... (8 wrong); distinct_returns[0] got 00000001 want 00000104; [1] got 00000001 want 0000010b; [2] got 00000001 want 000000fd ... (8 wrong)"
+    },
+    {
+      "feature": "atomics.atomicMin_Max_unsigned",
+      "probe": "atomics/min-max-unsigned-001",
+      "class": "silently-wrong",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": "umin[0] got ffffffff want 00af6306; [1] got ffffffff want 000a284f; [2] got ffffffff want 0041b7d6 ... (8 wrong); umax[0] got 00000000 want ffe0e002; [1] got 00000000 want fffbbbcc; [2] got 00000000 want ffb74f97 ... (8 wrong); smin[0] got 7fffffff want 8136a9c3; [1] got 7fffffff want 808f970b; [2] "
+    },
+    {
+      "feature": "atomics.shared_atomic_contention",
+      "probe": "atomics/shared-contention-001",
+      "class": "silently-wrong",
+      "oracle": "cpu-reference",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": "totals[0] got 00000000 want 00f663dd; [1] got 00000000 want 00f81565; [2] got 00000000 want 01010d4a ... (64 wrong); hist[0] got 00000000 want 00000053; [1] got 00000000 want 0000003b; [2] got 00000000 want 00000033 ... (512 wrong)"
+    },
+    {
+      "feature": "device-services.device_assert",
+      "probe": "device-services/assert-001",
+      "class": "refused-with-diagnostic",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": "compile: /Users/runner/work/Cuport-Matrix/Cuport-Matrix/probes/device-services/assert-001/probe.cu:14:5: error: no matching function for call to '__assert_rtn' | 14 |     assert(i != bad_index); | |     ^~~~~~~~~~~~~~~~~~~~~~ | /Library/Developer/CommandLineTools/SDKs/MacOSX27.sdk/usr/include/assert.h:72:34:"
+    },
+    {
+      "feature": "device-services.clock64_monotonic",
+      "probe": "device-services/clock64-001",
+      "class": "refused-with-diagnostic",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": "compile: [MVCC] warning: kernel _Z4tickPjS_Py: structured emission failed (unsupported intrinsic: llvm.nvvm.read.ptx.sreg.clock64); using state machine | [MVCC] error: in kernel tick(unsigned int*, unsigned int*, unsigned long long*): unsupported intrinsic: llvm.nvvm.read.ptx.sreg.clock64"
+    },
+    {
+      "feature": "device-services.device_malloc_free",
+      "probe": "device-services/malloc-free-001",
+      "class": "refused-with-diagnostic",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": "compile: /Users/runner/work/Cuport-Matrix/Cuport-Matrix/probes/device-services/malloc-free-001/probe.cu:13:41: error: no matching function for call to 'malloc' | 13 |     unsigned char *p = (unsigned char *)malloc(n); | |                                         ^~~~~~ | /Library/Developer/CommandLineTools/SD"
+    },
+    {
+      "feature": "device-services.device_printf",
+      "probe": "device-services/printf-001",
+      "class": "documented-divergence",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": "raw silently-wrong; Device printf compiles and returns 0 but prints nothing; README: Metal has no counterpart to CUDA's printf buffer; printf lines differ: got 0, want 64",
+      "reference": "https://github.com/doximity/mvcc/blob/v1.3.0/README.md?plain=1#L111"
+    },
+    {
+      "feature": "fp-semantics.denormal_handling",
+      "probe": "fp-semantics/denormals-001",
+      "class": "silently-wrong",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": "half_tiny[0] got 00000000 want 80d3e27d; [1] got 00000000 want 0064c1aa; [2] got 00000000 want 80b0a115 ... (2048 wrong); sub_add[0] got 00000000 want 005f3846; [1] got 00000000 want 00908d80; [2] got 00000000 want 801391d4 ... (2048 wrong); sub_scale[0] got 00000000 want 0bd5d304; [1] got 00000000 "
+    },
+    {
+      "feature": "fp-semantics.fast_math_intrinsics",
+      "probe": "fp-semantics/fast-expf-001",
+      "class": "silently-wrong",
+      "oracle": "cpu-reference",
+      "tolerance": "ulp:2",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": "y[0] got 00000000 want 3f800000; [1] got 00000000 want 3f800000; [2] got 00000000 want 3f8694ab ... (4098 wrong)"
+    },
+    {
+      "feature": "fp-semantics.fast_math_intrinsics",
+      "probe": "fp-semantics/fast-fdividef-001",
+      "class": "silently-wrong",
+      "oracle": "cpu-reference",
+      "tolerance": "ulp:2",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": "y[0] got 00000000 want d9a2313f; [1] got 00000000 want 35d80906; [2] got 00000000 want 6f041471 ... (4096 wrong)"
+    },
+    {
+      "feature": "fp-semantics.fast_math_intrinsics",
+      "probe": "fp-semantics/fast-sinf-001",
+      "class": "silently-wrong",
+      "oracle": "cpu-reference",
+      "tolerance": "abs:3.9e-7",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": "y[4] got 00000000 want be8873db; [5] got 00000000 want 3ec5ddcd; [6] got 00000000 want 3f5e5687 ... (4096 wrong)"
+    },
+    {
+      "feature": "fp-semantics.fma_contraction_default",
+      "probe": "fp-semantics/fma-contraction-001",
+      "class": "silently-wrong",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": "expr[0] got 00000000 want 32b8be60; [1] got 00000000 want bfd80c35; [2] got 00000000 want b3f7b244 ... (4096 wrong); fused[0] got 00000000 want 32b8be60; [1] got 00000000 want bfd80c35; [2] got 00000000 want b3f7b244 ... (4096 wrong); split[1] got 00000000 want bfd80c35; [3] got 00000000 want 3d28d8"
+    },
+    {
+      "feature": "fp-semantics.fp64_emulation_presence",
+      "probe": "fp-semantics/fp64-emulation-001",
+      "class": "refused-with-diagnostic",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": "compile: [MVCC] warning: kernel _Z4fp64PKdS0_S0_PdS1_S1_S1_S1_j: structured emission failed (fp64 libdevice function __nv_fma is not emulated (software binary64 covers + - * / sqrt, rounding, comparisons and conversions; README.md)); using state machine | [MVCC] error: in kernel fp64(double const*, double co"
+    },
+    {
+      "feature": "fp-semantics.half_bf16_conversions",
+      "probe": "fp-semantics/half-bf16-001",
+      "class": "silently-wrong",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": "h_rn[1] got 0000 want 8000; [2] got 0000 want 7c00; [3] got 0000 want fc00 ... (2010 wrong); h_rz[1] got 0000 want 8000; [2] got 0000 want 7c00; [3] got 0000 want fc00 ... (1991 wrong); h_ru[1] got 0000 want 8000; [2] got 0000 want 7c00; [3] got 0000 want fc00 ... (2047 wrong); h_rd[1] got 0000 want"
+    },
+    {
+      "feature": "fp-semantics.rounding_mode_intrinsics",
+      "probe": "fp-semantics/rounding-modes-001",
+      "class": "refused-with-diagnostic",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": "compile: [MVCC] warning: kernel _Z8directedPKfS0_S0_Pfj: structured emission failed (unsupported libdevice function __nv_fadd_rz); using state machine | [MVCC] error: in kernel directed(float const*, float const*, float const*, float*, unsigned int): unsupported libdevice function __nv_fadd_rz"
+    },
+    {
+      "feature": "launch-geometry.blockDim_gridDim_3d",
+      "probe": "launch-geometry/dim3-3d-001",
+      "class": "silently-wrong",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": "packed[0] got ffffffff want 00000000; [1] got ffffffff want 00001000; [2] got ffffffff want 00002000 ... (1536 wrong); dims[0] got 00000000 want 00000008; [1] got 00000000 want 00000004; [2] got 00000000 want 00000002 ... (6 wrong)"
+    },
+    {
+      "feature": "launch-geometry.dynamic_shared_size_param",
+      "probe": "launch-geometry/dynamic-shared-size-001",
+      "class": "silently-wrong",
+      "oracle": "cpu-reference",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": "folds[0] got 00000000 want c26006c6; [1] got 00000000 want 0c1b6852; [2] got 00000000 want d31f4716 ... (24 wrong)"
+    },
+    {
+      "feature": "launch-geometry.launch_bounds_large_grid",
+      "probe": "launch-geometry/large-grid-001",
+      "class": "silently-wrong",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": "block_fold[0] got 00000000 want bd54b400; [1] got 00000000 want 2f327e00; [2] got 00000000 want a5903000 ... (70001 wrong)"
+    },
+    {
+      "feature": "launch-geometry.threadIdx_blockIdx_mapping",
+      "probe": "launch-geometry/thread-block-index-001",
+      "class": "silently-wrong",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": "packed[0] got ffffffff want 00000000; [1] got ffffffff want 00000001; [2] got ffffffff want 00000002 ... (3700 wrong); dims[0] got 00000000 want 00000064; [1] got 00000000 want 00000025 (2 wrong)"
+    },
+    {
+      "feature": "launch-geometry.zero_size_launch",
+      "probe": "launch-geometry/zero-size-launch-001",
+      "class": "silently-wrong",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": "after_one[0] got abababab want 600df00d; [1] got abababab want 600df00d; [2] got abababab want 600df00d ... (32 wrong)"
+    },
+    {
+      "feature": "limits-refusals.cooperative_groups_grid_sync",
+      "probe": "limits-refusals/cooperative-grid-sync-001",
+      "class": "refused-with-diagnostic",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": "compile: /Users/runner/work/Cuport-Matrix/Cuport-Matrix/probes/limits-refusals/cooperative-grid-sync-001/probe.cu:7:10: fatal error: 'cooperative_groups.h' file not found | 7 | #include <cooperative_groups.h> | |          ^~~~~~~~~~~~~~~~~~~~~~ | 1 error generated when compiling for sm_89."
+    },
+    {
+      "feature": "limits-refusals.dynamic_parallelism",
+      "probe": "limits-refusals/dynamic-parallelism-001",
+      "class": "refused-with-diagnostic",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": "compile: /Users/runner/work/Cuport-Matrix/Cuport-Matrix/probes/limits-refusals/dynamic-parallelism-001/probe.cu:20:32: error: use of undeclared identifier cudaLaunchDevice | 20 |     if (threadIdx.x == 0) child<<<1, blockDim.x>>>(in, out, blockIdx.x * blockDim.x); | |                                ^ | 1 err"
+    },
+    {
+      "feature": "limits-refusals.unsupported_intrinsic_diagnostic",
+      "probe": "limits-refusals/inline-ptx-001",
+      "class": "silently-wrong",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": "lane_id[1] got 00000000 want 00000001; [2] got 00000000 want 00000002; [3] got 00000000 want 00000003 ... (124 wrong)"
+    },
+    {
+      "feature": "limits-refusals.oversized_shared_request",
+      "probe": "limits-refusals/oversized-shared-001",
+      "class": "undocumented-divergence",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": "https://github.com/doximity/mvcc/issues/21",
+      "notes": "raw silently-wrong; 64 KB dynamic shared launch without cudaFuncSetAttribute opt-in succeeds and runs; the 48 KB limit is only reported by cudaFuncGetAttributes, never checked at launch; refused[0] got 00000000 want 00000001 (1 wrong); codes[0] got 00000000 want 00000001 (1 wrong)",
+      "reference": "https://github.com/doximity/mvcc/blob/v1.3.0/crates/mvcc-cudart/src/api.rs#L96-L98"
+    },
+    {
+      "feature": "limits-refusals.texture_surface_refs",
+      "probe": "limits-refusals/texture-object-001",
+      "class": "refused-with-diagnostic",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": "compile: /Users/runner/work/Cuport-Matrix/Cuport-Matrix/probes/limits-refusals/texture-object-001/probe.cu:12:14: error: use of undeclared identifier 'tex1Dfetch' | 12 |     out[i] = tex1Dfetch<uint32_t>(tex, (int)((i * 7u) % n)); | |              ^~~~~~~~~~ | /Users/runner/work/Cuport-Matrix/Cuport-Matrix/p"
+    },
+    {
+      "feature": "shared-memory-barriers.dynamic_shared_extern",
+      "probe": "shared-memory-barriers/dynamic-shared-001",
+      "class": "silently-wrong",
+      "oracle": "cpu-reference",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": "fout[0] got 00000000 want 3eed87cc; [1] got 00000000 want 3f210f30; [2] got 00000000 want 3ea8450c ... (6144 wrong); uout[0] got 00000000 want ffbcc607; [1] got 00000000 want 6a6ee329; [2] got 00000000 want 6fd36463 ... (6144 wrong)"
+    },
+    {
+      "feature": "shared-memory-barriers.shared_limit_32kb_boundary",
+      "probe": "shared-memory-barriers/shared-32kb-001",
+      "class": "silently-wrong",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": "folds[0] got 00000000 want ae6dcac2; [1] got 00000000 want 216d9f52; [2] got 00000000 want 6eb857be ... (8 wrong)"
+    },
+    {
+      "feature": "shared-memory-barriers.static_shared_array",
+      "probe": "shared-memory-barriers/static-shared-001",
+      "class": "silently-wrong",
+      "oracle": "cpu-reference",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": "out[0] got 00000000 want 33f5c463; [1] got 00000000 want 0b2ba7b4; [2] got 00000000 want b4ced091 ... (16384 wrong)"
+    },
+    {
+      "feature": "shared-memory-barriers.syncthreads_count_and_or",
+      "probe": "shared-memory-barriers/syncthreads-count-001",
+      "class": "undocumented-divergence",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": "https://github.com/doximity/mvcc/issues/20",
+      "notes": "raw silently-wrong; __syncthreads_count/_and/_or lower to a plain barrier and store an uninitialized value; README promises a compile error for unsupported intrinsics; count[0] got 00000000 want 0000000f; [1] got 00000000 want 0000000d; [2] got 00000000 want 00000012 ... (256 wrong); all[0] got 0000",
+      "reference": "https://github.com/doximity/mvcc/blob/v1.3.0/README.md"
+    },
+    {
+      "feature": "shared-memory-barriers.syncthreads_reduction",
+      "probe": "shared-memory-barriers/syncthreads-reduction-001",
+      "class": "silently-wrong",
+      "oracle": "cpu-reference",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": "sums[0] got 00000000 want 6b481dc7; [1] got 00000000 want 7042a07e; [2] got 00000000 want e056921c ... (128 wrong)"
+    },
+    {
+      "feature": "streams-events.async_memcpy_overlap",
+      "probe": "streams-events/async-memcpy-overlap-001",
+      "class": "bit-exact",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": ""
+    },
+    {
+      "feature": "streams-events.default_stream_sync",
+      "probe": "streams-events/default-stream-sync-001",
+      "class": "silently-wrong",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": "x[0] got 00000000 want 38b6183a; [1] got 00000000 want 529c1582; [2] got 00000000 want adf6d850 ... (65536 wrong); y[0] got 00000000 want 4134f3ea; [1] got 00000000 want c932ef19; [2] got 00000000 want c09a9515 ... (65536 wrong); z[0] got 00000000 want e491564f; [1] got 00000000 want 6c974abc; [2] g"
+    },
+    {
+      "feature": "streams-events.event_elapsed_time",
+      "probe": "streams-events/event-timing-001",
+      "class": "bit-exact",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": ""
+    },
+    {
+      "feature": "streams-events.stream_ordering",
+      "probe": "streams-events/stream-ordering-001",
+      "class": "silently-wrong",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": "out[0] got 5baf422b want 30c7c6ab; [1] got 732c45ba want 8f10d1ba; [2] got b377562d want 620c0ded ... (65536 wrong)"
+    },
+    {
+      "feature": "warp-primitives.ballot_any_all",
+      "probe": "warp-primitives/ballot-any-all-001",
+      "class": "silently-wrong",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": "ballot[0] got 00000000 want ffffdfff; [1] got 00000000 want ffffffff; [2] got 00000000 want f7ffbfff ... (256 wrong); any[16] got 00000000 want 00000001; [43] got 00000000 want 00000001; [70] got 00000000 want 00000001 ... (7 wrong); all[1] got 00000000 want 00000001; [9] got 00000000 want 00000001;"
+    },
+    {
+      "feature": "warp-primitives.match_any_sync",
+      "probe": "warp-primitives/match-any-001",
+      "class": "silently-wrong",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": "masks[0] got 00000000 want 808c0201; [1] got 00000000 want 0021c142; [2] got 00000000 want 46000034 ... (2048 wrong)"
+    },
+    {
+      "feature": "warp-primitives.lane_mask_partial_warp",
+      "probe": "warp-primitives/partial-warp-001",
+      "class": "silently-wrong",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": "mask[0] got 00000000 want ffffffff; [1] got 00000000 want ffffffff; [2] got 00000000 want ffffffff ... (384 wrong); ballot[0] got 00000000 want 6c35054c; [1] got 00000000 want 6c35054c; [2] got 00000000 want 6c35054c ... (384 wrong); shfl[0] got 00000000 want f3f22ae4; [1] got 00000000 want da44ba91"
+    },
+    {
+      "feature": "warp-primitives.shfl_sync_variants",
+      "probe": "warp-primitives/shfl-variants-001",
+      "class": "silently-wrong",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": "idx[0] got 00000000 want ee7a54ec; [1] got 00000000 want fdc659af; [2] got 00000000 want 4e9c816a ... (2048 wrong); up[0] got 00000000 want 5b3c3603; [1] got 00000000 want 6f19d54e; [2] got 00000000 want 34d321fa ... (2048 wrong); down[0] got 00000000 want ee7a54ec; [1] got 00000000 want 09944b15; ["
+    },
+    {
+      "feature": "warp-primitives.shfl_xor_width",
+      "probe": "warp-primitives/shfl-xor-width-001",
+      "class": "silently-wrong",
+      "oracle": "spec",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": "out[0] got 00000000 want 9023b5b6; [1] got 00000000 want 861250e4; [2] got 00000000 want df4759b7 ... (12800 wrong)"
+    },
+    {
+      "feature": "warp-primitives.warp_reduce_add",
+      "probe": "warp-primitives/warp-reduce-add-001",
+      "class": "silently-wrong",
+      "oracle": "cpu-reference",
+      "tolerance": "bit-exact",
+      "evidence": "[reproduced]",
+      "upstream": null,
+      "notes": "sums[0] got 00000000 want e71d2c97; [1] got 00000000 want 39efc9a5; [2] got 00000000 want 8bfb5240 ... (1024 wrong)"
+    }
+  ]
+}
