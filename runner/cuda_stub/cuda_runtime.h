@@ -21,6 +21,14 @@
 
 #include <__clang_cuda_builtin_vars.h>
 
+// assert() in device code expands to the C library's failure hook; give it the
+// device overload the CUDA headers provide (glibc and Apple libc spellings).
+#if defined(__GLIBC__)
+__device__ void __assert_fail(const char *assertion, const char *file, unsigned line, const char *function);
+#elif defined(__APPLE__)
+__device__ void __assert_rtn(const char *function, const char *file, int line, const char *assertion);
+#endif
+
 struct dim3 {
     unsigned x, y, z;
     __host__ __device__ constexpr dim3(unsigned x_ = 1, unsigned y_ = 1, unsigned z_ = 1) : x(x_), y(y_), z(z_) {}

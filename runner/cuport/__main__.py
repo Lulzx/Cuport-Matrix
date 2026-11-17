@@ -83,7 +83,7 @@ def syntax_errors(probe) -> list[str]:
     """Parse probe.cu with clang's CUDA mode against runner/cuda_stub, host side
     and device side. Catches typos and missing declarations; runs nothing."""
     base = ["clang++", "-x", "cuda", "-std=c++17", "-nocudainc", "-nocudalib", "--cuda-gpu-arch=sm_80",
-            "-fsyntax-only", "-Wno-unknown-cuda-version", "-I", str(STUB_DIR), str(probe.dir / "probe.cu")]
+            "-fsyntax-only", "-fgpu-rdc", "-Wno-unknown-cuda-version", "-I", str(STUB_DIR), str(probe.dir / "probe.cu")]
     out = []
     for side in ("--cuda-host-only", "--cuda-device-only"):
         r = subprocess.run(base + [side], capture_output=True, text=True)
