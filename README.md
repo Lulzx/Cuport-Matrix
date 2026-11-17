@@ -156,8 +156,7 @@ export PYTHONPATH=runner            # on Windows: set PYTHONPATH=runner
 
 Milestone v0 (scope in `docs/survey-2026-11-15.md`, section 6) is built: all
 42 probes, both tool adapters, the `nvcc` reference lane, both Apple lanes,
-the scoreboard and the divergence catalogue. What remains is mostly runs on
-hardware only one team member has.
+the scoreboard and the divergence catalogue.
 
 ```mermaid
 gantt
@@ -207,12 +206,7 @@ paravirtual GPU most mvcc kernels leave their output buffers untouched, so
 probes that are bit-exact on the M6 read back zeros; the cause is not yet
 investigated. The per-probe list is in [docs/scoreboard.md](docs/scoreboard.md).
 
-### 2 things remain open
-
-| Item | Owner | Why it is open |
-|---|---|---|
-| RTX 4090 reference drops for the 7 newest probes (`fp-semantics` fma-contraction, denormals, fp64-emulation, half-bf16, rounding-modes; `streams-events` event-timing, default-stream-sync) | Vivian (RTX 4090s) | The RTX 4500 Ada drops exist; a second card is needed for the two-card check |
-| Linux negative control for `streams-events/default-stream-sync-001` | either, on a Linux NVIDIA box | Under WDDM on Windows the non-blocking and per-thread-stream variants also serialise, so the control could not show a race there |
+### 0 things remain open
 
 ### What CI proves
 
