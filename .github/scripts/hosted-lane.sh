@@ -21,10 +21,13 @@ esac
 cd "$(git rev-parse --show-toplevel)"
 
 # Rows are labelled paravirtual, so refuse to write them from real hardware.
-gpu=$(system_profiler SPDisplaysDataType)
-echo "$gpu"
+# system_profiler lists no display on the hosted VM, so ask Metal directly.
 sw_vers
-if ! grep -q "Apple Paravirtual device" <<<"$gpu"; then
+sysctl -n hw.model
+CUPORT_METAL_DEVICE=$(swift -e 'import Metal; print(MTLCreateSystemDefaultDevice()?.name ?? "none")')
+export CUPORT_METAL_DEVICE
+echo "Metal device: $CUPORT_METAL_DEVICE"
+if [ "$CUPORT_METAL_DEVICE" != "Apple Paravirtual device" ]; then
   echo "this runner's GPU is not the Apple Paravirtual device" >&2
   exit 1
 fi

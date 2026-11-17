@@ -57,6 +57,7 @@ build_mvcc() {
   echo "== mvcc $version ($commit)"
   brew install --quiet llvm z3 zstd cmake ninja rust
   checkout "$(pin mvcc repo)" "$src" "$commit"
+  cd "$src"  # install_toolkit.sh runs cargo in the current directory
   LLVM_DIR="$(brew --prefix llvm)/lib/cmake/llvm" \
   MVCC_Z3_LIB="$(brew --prefix z3)/lib" \
   MVCC_ZSTD_LIB="$(brew --prefix zstd)/lib" \

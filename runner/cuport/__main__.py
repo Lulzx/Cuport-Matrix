@@ -50,6 +50,11 @@ def collect_hardware(hw_id: str) -> dict:
     keep = ("Chipset Model", "Total Number of Cores", "Metal Support")
     lines = [l.strip() for l in _sh(["system_profiler", "SPDisplaysDataType"]).splitlines()
              if l.strip().startswith(keep)]
+    # A hosted VM lists no display; its lane script asks Metal for the device name.
+    if os.environ.get("CUPORT_METAL_DEVICE"):
+        lines.append(f"Metal device: {os.environ['CUPORT_METAL_DEVICE']}")
+    if not lines:
+        lines.append(f"Model: {_sh(['sysctl', '-n', 'hw.model'])}")
     return {"id": hw_id, "macos": macos, "profiler": "; ".join(lines)}
 
 
@@ -77,15 +82,20 @@ def cmd_list(args) -> int:
 
 
 STUB_DIR = pathlib.Path(__file__).resolve().parents[1] / "cuda_stub"
+# Sides clang cannot parse for a probe, with the reason. Clang has no CUDA
+# dynamic parallelism: it rejects any __global__ call from device code.
+SYNTAX_SKIP = {"limits-refusals/dynamic-parallelism-001": {"--cuda-device-only"}}
 
 
 def syntax_errors(probe) -> list[str]:
     """Parse probe.cu with clang's CUDA mode against runner/cuda_stub, host side
     and device side. Catches typos and missing declarations; runs nothing."""
     base = ["clang++", "-x", "cuda", "-std=c++17", "-nocudainc", "-nocudalib", "--cuda-gpu-arch=sm_80",
-            "-fsyntax-only", "-fgpu-rdc", "-Wno-unknown-cuda-version", "-I", str(STUB_DIR), str(probe.dir / "probe.cu")]
+            "-fsyntax-only", "-Wno-unknown-cuda-version", "-I", str(STUB_DIR), str(probe.dir / "probe.cu")]
     out = []
     for side in ("--cuda-host-only", "--cuda-device-only"):
+        if side in SYNTAX_SKIP.get(probe.id, ()):
+            continue
         r = subprocess.run(base + [side], capture_output=True, text=True)
         if r.returncode != 0:
             first = [l for l in r.stderr.splitlines() if "error:" in l][:3]
