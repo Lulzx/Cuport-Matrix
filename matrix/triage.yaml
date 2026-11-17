@@ -61,3 +61,19 @@ entries:
     reference: https://github.com/Lulzx/cuda-metal/blob/v0.8.0/runtime/rt/cuda_runtime.cpp#L7247-L7249
     upstream: https://github.com/Lulzx/cuda-metal/issues/207
     notes: "Zero grid or block dimension returns cudaErrorInvalidValue (1) instead of cudaErrorInvalidConfiguration (9)"
+
+  - tool: cumetal
+    probe: fp-semantics/fp64-emulation-001
+    raw_class: silently-wrong
+    class: documented-divergence
+    reference: https://github.com/Lulzx/cuda-metal/blob/v0.8.0/docs/fp64-policy.md?plain=1#L17-L34
+    upstream: null
+    notes: "Default --fp64=fast48 is FP32-pair arithmetic with about 48 significand bits, so add/mul/div/sqrt/fma miss the binary64 rounding; bit-exact with --fp64=ieee64"
+
+  - tool: cumetal
+    probe: fp-semantics/denormals-001
+    raw_class: silently-wrong
+    class: documented-divergence
+    reference: https://github.com/Lulzx/cuda-metal/blob/v0.8.0/docs/fp64-policy.md?plain=1#L17-L34
+    upstream: null
+    notes: "Only the double buffers fail: default --fp64=fast48 keeps the binary32 exponent envelope, so double subnormals become zero; float subnormals are kept; bit-exact with --fp64=ieee64"
