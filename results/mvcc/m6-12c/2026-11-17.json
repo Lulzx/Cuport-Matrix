@@ -13,7 +13,7 @@
   "date": "2026-11-17",
   "runner": {
     "command": "python -m cuport run --tool mvcc --hardware m6-12c --jobs 12 --gpu-jobs 4 --force",
-    "duration_s": 3.4,
+    "duration_s": 5.0,
     "config": {
       "jobs": 12,
       "gpu_jobs": 4,
@@ -22,7 +22,7 @@
       "seed": "per probe: x0 = FNV-1a 64 of the probe id; LCG and draw rule in matrix/schema.md",
       "python": "3.13.18",
       "tool_detail": "Build mvcc_1.3.0_0",
-      "repo_commit": "49718dbbe332c90ce7f57db3feb9eb3a48b22c7c",
+      "repo_commit": "518cea7a7bf7e8614fd98f6a7d0d68f2a1a79da3",
       "repo_dirty": false
     }
   },

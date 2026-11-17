@@ -13,7 +13,7 @@
   "date": "2026-11-17",
   "runner": {
     "command": "python -m cuport run --tool cumetal --hardware m6-12c --jobs 12 --gpu-jobs 4 --force",
-    "duration_s": 5.1,
+    "duration_s": 5.5,
     "config": {
       "jobs": 12,
       "gpu_jobs": 4,
@@ -22,7 +22,7 @@
       "seed": "per probe: x0 = FNV-1a 64 of the probe id; LCG and draw rule in matrix/schema.md",
       "python": "3.13.18",
       "tool_detail": "/Users/viviansobers/.local/cuport-tools/cumetal-v0.8.0/bin/cumetalc",
-      "repo_commit": "49718dbbe332c90ce7f57db3feb9eb3a48b22c7c",
+      "repo_commit": "518cea7a7bf7e8614fd98f6a7d0d68f2a1a79da3",
       "repo_dirty": false
     }
   },
@@ -162,12 +162,13 @@
     {
       "feature": "fp-semantics.fma_contraction_default",
       "probe": "fp-semantics/fma-contraction-001",
-      "class": "silently-wrong",
+      "class": "undocumented-divergence",
       "oracle": "spec",
       "tolerance": "bit-exact",
       "evidence": "[reproduced]",
-      "upstream": null,
-      "notes": "split[0] got 32b8be60 want 00000000; [2] got b3f7b244 want 00000000; [3] got 3d28d827 want 3d28d840 ... (3230 wrong)"
+      "upstream": "https://github.com/Lulzx/cuda-metal/issues/208",
+      "notes": "raw silently-wrong; __fadd_rn(__fmul_rn(a, b), c) is fused into one FMA; __nv_fmul_rn/__nv_fadd_rn are imported as plain mul/add and then contracted; split[0] got 32b8be60 want 00000000; [2] got b3f7b244 want 00000000; [3] got 3d28d827 want 3d28d840 ... (3230 wrong)",
+      "reference": "https://github.com/Lulzx/cuda-metal/blob/v0.8.0/compiler/ir/src/nvvm_importer.cpp#L1966-L1969"
     },
     {
       "feature": "fp-semantics.fp64_emulation_presence",
@@ -375,12 +376,13 @@
     {
       "feature": "streams-events.event_elapsed_time",
       "probe": "streams-events/event-timing-001",
-      "class": "silently-wrong",
+      "class": "undocumented-divergence",
       "oracle": "spec",
       "tolerance": "bit-exact",
       "evidence": "[reproduced]",
-      "upstream": null,
-      "notes": "checks[6] got 00000001 want 00000190; [7] got 00000001 want 00000190 (2 wrong)"
+      "upstream": "https://github.com/Lulzx/cuda-metal/issues/209",
+      "notes": "raw silently-wrong; cudaEventElapsedTime returns cudaErrorInvalidValue (1) instead of cudaErrorInvalidResourceHandle (400) for unrecorded and timing-disabled events; checks[6] got 00000001 want 00000190; [7] got 00000001 want 00000190 (2 wrong)",
+      "reference": "https://github.com/Lulzx/cuda-metal/blob/v0.8.0/runtime/rt/cuda_runtime.cpp#L6051-L6061"
     },
     {
       "feature": "streams-events.stream_ordering",

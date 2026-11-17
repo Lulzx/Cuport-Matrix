@@ -4,18 +4,17 @@ Every cell where mvcc or CuMetal does not match CUDA on the Apple M6
 (`m6-12c`, 12-core GPU, macOS 27.2). Source rows:
 `results/mvcc/m6-12c/2026-11-17.json` and
 `results/cumetal/m6-12c/2026-11-17.json`, both run from repo commit
-`49718db` with mvcc v1.3.0 (`8a814c2`) and CuMetal v0.8.0 (`6651796`). The
+`518cea7` with mvcc v1.3.0 (`8a814c2`) and CuMetal v0.8.0 (`6651796`). The
 corpus has 42 probes.
 
 | | bit-exact | within tolerance | documented divergence | undocumented divergence | refused with diagnostic | silently wrong |
 |---|---|---|---|---|---|---|
 | mvcc | 29 | 2 | 1 | 2 | 8 | 0 |
-| CuMetal | 27 | 2 | 3 | 3 | 5 | 2 |
+| CuMetal | 27 | 2 | 3 | 5 | 5 | 0 |
 
 Each entry was checked against the tool's source at its pinned commit, so
 none of them is a probe bug. Every undocumented divergence has an upstream
-issue, recorded in `matrix/triage.yaml`. The two silently wrong CuMetal cells
-are undocumented too; they stay in that class until their issues are filed.
+issue, recorded in `matrix/triage.yaml`.
 
 ## Wrong results
 
@@ -105,15 +104,16 @@ contracted. CuMetal's NVVM importer maps `__nv_fmul_rn` and `__nv_fadd_rn` to
 its ordinary multiply and add opcodes (`compiler/ir/src/nvvm_importer.cpp`,
 lines 1966-1969), after which the backend contracts them like `a * b + c`.
 The default contraction of `a * b + c` itself matches CUDA. mvcc is
-bit-exact. Undocumented; issue drafted, not filed yet.
+bit-exact. Undocumented divergence, filed as
+[Lulzx/cuda-metal#208](https://github.com/Lulzx/cuda-metal/issues/208).
 
 ### `streams-events/event-timing-001`: CuMetal
 
 `cudaEventElapsedTime` returns `cudaErrorInvalidValue` (1) for an event that
 was never recorded and for one created with `cudaEventDisableTiming`. CUDA
 returns `cudaErrorInvalidResourceHandle` (400) for both, as do mvcc and the
-RTX 4500 Ada drop. Every timing check passes. Undocumented; issue drafted,
-not filed yet.
+RTX 4500 Ada drop. Every timing check passes. Undocumented divergence, filed
+as [Lulzx/cuda-metal#209](https://github.com/Lulzx/cuda-metal/issues/209).
 
 ## Passes with a caveat
 
@@ -156,8 +156,8 @@ Cells not listed are bit-exact or appear above.
 | CuMetal | `oversized-shared-001` | [#205](https://github.com/Lulzx/cuda-metal/issues/205), open |
 | CuMetal | `shfl-xor-width-001` | [#206](https://github.com/Lulzx/cuda-metal/issues/206), open |
 | CuMetal | `zero-size-launch-001` | [#207](https://github.com/Lulzx/cuda-metal/issues/207), open |
-| CuMetal | `fma-contraction-001` | drafted |
-| CuMetal | `event-timing-001` | drafted |
+| CuMetal | `fma-contraction-001` | [#208](https://github.com/Lulzx/cuda-metal/issues/208), open |
+| CuMetal | `event-timing-001` | [#209](https://github.com/Lulzx/cuda-metal/issues/209), open |
 
 When a tool fixes one of these, its raw class changes, the triage entry stops
 matching, and the cell falls back to whatever the runner measures.

@@ -9,9 +9,9 @@ divergence is explained in `docs/divergences.md`.
 
 | Tool | Hardware | Date | Repo commit | bit-exact | within-tolerance | documented-divergence | undocumented-divergence | refused-with-diagnostic | silently-wrong | crash-hang | not-run |
 |---|---|---|---|--:|--:|--:|--:|--:|--:|--:|--:|
-| mvcc v1.3.0 | `m6-12c` | [2026-11-17](../results/mvcc/m6-12c/2026-11-17.json) | `49718db` | 29 | 2 | 1 | 2 | 8 | 0 | 0 | 0 |
+| mvcc v1.3.0 | `m6-12c` | [2026-11-17](../results/mvcc/m6-12c/2026-11-17.json) | `518cea7` | 29 | 2 | 1 | 2 | 8 | 0 | 0 | 0 |
 | mvcc v1.3.0 | `paravirtual` | [2026-11-17](../results/mvcc/paravirtual/2026-11-17.json) | `675e85a` | 2 | 0 | 1 | 2 | 8 | 29 | 0 | 0 |
-| cumetal v0.8.0 | `m6-12c` | [2026-11-17](../results/cumetal/m6-12c/2026-11-17.json) | `49718db` | 27 | 2 | 3 | 3 | 5 | 2 | 0 | 0 |
+| cumetal v0.8.0 | `m6-12c` | [2026-11-17](../results/cumetal/m6-12c/2026-11-17.json) | `518cea7` | 27 | 2 | 3 | 5 | 5 | 0 | 0 | 0 |
 | cumetal v0.8.0 | `paravirtual` | [2026-11-17](../results/cumetal/paravirtual/2026-11-17.json) | `675e85a` | 26 | 2 | 1 | 3 | 5 | 5 | 0 | 0 |
 
 ## Milestone v0 criteria
@@ -19,8 +19,8 @@ divergence is explained in `docs/divergences.md`.
 | Criterion | Target | Now |
 |---|---|---|
 | Cells classified (not `not-run`) | at least 90 % of 42 probes x 2 tools x 2 lanes = 168 | 168 of 168 (100.0 %) |
-| Undocumented divergences acknowledged upstream | at least 3 | 5 issues |
-| Hosted-vs-M6 disagreement rate | reported as a number | 32 of 84 probes (38.1 %) |
+| Undocumented divergences acknowledged upstream | at least 3 | 7 issues |
+| Hosted-vs-M6 disagreement rate | reported as a number | 34 of 84 probes (40.5 %) |
 
 ## Hosted-vs-M6 disagreement
 
@@ -32,8 +32,8 @@ otherwise; it is never folded into the M6 result.
 | Tool | Compared | Differ | Rate |
 |---|--:|--:|--:|
 | mvcc | 42 | 29 | 69.0 % |
-| cumetal | 42 | 3 | 7.1 % |
-| **all** | 84 | 32 | **38.1 %** |
+| cumetal | 42 | 5 | 11.9 % |
+| **all** | 84 | 34 | **40.5 %** |
 
 | Tool | Probe | `paravirtual` | `m6-12c` |
 |---|---|---|---|
@@ -67,8 +67,10 @@ otherwise; it is never folded into the M6 result.
 | mvcc | `warp-primitives/shfl-xor-width-001` | silently-wrong | bit-exact |
 | mvcc | `warp-primitives/warp-reduce-add-001` | silently-wrong | bit-exact |
 | cumetal | `fp-semantics/denormals-001` | silently-wrong | documented-divergence |
+| cumetal | `fp-semantics/fma-contraction-001` | silently-wrong | undocumented-divergence |
 | cumetal | `fp-semantics/fp64-emulation-001` | silently-wrong | documented-divergence |
 | cumetal | `limits-refusals/texture-object-001` | silently-wrong | bit-exact |
+| cumetal | `streams-events/event-timing-001` | silently-wrong | undocumented-divergence |
 
 ## Probe matrix
 
@@ -94,7 +96,7 @@ probe (`probes/<family>/<id>/reference/`); every drop matches the probe's oracle
 | `fast-expf-001` | tol | **WRONG** | tol | tol | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
 | `fast-fdividef-001` | exact | **WRONG** | exact | exact | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
 | `fast-sinf-001` | tol | **WRONG** | tol | tol | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
-| `fma-contraction-001` | exact | **WRONG** | **WRONG** | **WRONG** | rtx4500ada-cuda13.5 |
+| `fma-contraction-001` | exact | **WRONG** | **UNDOC** | **WRONG** | rtx4500ada-cuda13.5 |
 | `fp64-emulation-001` | refused | refused | doc-div | **WRONG** | rtx4500ada-cuda13.5 |
 | `half-bf16-001` | exact | **WRONG** | refused | refused | rtx4500ada-cuda13.5 |
 | `rounding-modes-001` | refused | refused | exact | exact | rtx4500ada-cuda13.5 |
@@ -119,7 +121,7 @@ probe (`probes/<family>/<id>/reference/`); every drop matches the probe's oracle
 | **streams-events** | | | | | |
 | `async-memcpy-overlap-001` | exact | exact | exact | exact | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
 | `default-stream-sync-001` | exact | **WRONG** | exact | exact | rtx4500ada-cuda13.5 |
-| `event-timing-001` | exact | exact | **WRONG** | **WRONG** | rtx4500ada-cuda13.5 |
+| `event-timing-001` | exact | exact | **UNDOC** | **WRONG** | rtx4500ada-cuda13.5 |
 | `stream-ordering-001` | exact | **WRONG** | exact | exact | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
 | **warp-primitives** | | | | | |
 | `ballot-any-all-001` | exact | **WRONG** | exact | exact | · |
@@ -131,8 +133,10 @@ probe (`probes/<family>/<id>/reference/`); every drop matches the probe's oracle
 
 ## Upstream issues
 
+- cumetal, `fp-semantics/fma-contraction-001` (`m6-12c`): https://github.com/Lulzx/cuda-metal/issues/208
 - cumetal, `launch-geometry/zero-size-launch-001` (`m6-12c`, `paravirtual`): https://github.com/Lulzx/cuda-metal/issues/207
 - cumetal, `limits-refusals/oversized-shared-001` (`m6-12c`, `paravirtual`): https://github.com/Lulzx/cuda-metal/issues/205
+- cumetal, `streams-events/event-timing-001` (`m6-12c`): https://github.com/Lulzx/cuda-metal/issues/209
 - cumetal, `warp-primitives/shfl-xor-width-001` (`m6-12c`, `paravirtual`): https://github.com/Lulzx/cuda-metal/issues/206
 - mvcc, `limits-refusals/oversized-shared-001` (`m6-12c`, `paravirtual`): https://github.com/doximity/mvcc/issues/21
 - mvcc, `shared-memory-barriers/syncthreads-count-001` (`m6-12c`, `paravirtual`): https://github.com/doximity/mvcc/issues/20
