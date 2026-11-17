@@ -206,7 +206,7 @@ paravirtual GPU most mvcc kernels leave their output buffers untouched, so
 probes that are bit-exact on the M6 read back zeros; the cause is not yet
 investigated. The per-probe list is in [docs/scoreboard.md](docs/scoreboard.md).
 
-### 0 things remain open
+Every v0 item is done; nothing is open.
 
 ### What CI proves
 
