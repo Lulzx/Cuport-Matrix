@@ -1,0 +1,7 @@
+id: fp-semantics/rounding-modes-001
+family: fp-semantics
+features: [rounding_mode_intrinsics]
+oracle: spec
+tolerance: bit-exact
+expect: output
+timeout_s: 60

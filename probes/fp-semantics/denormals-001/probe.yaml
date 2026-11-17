@@ -1,0 +1,7 @@
+id: fp-semantics/denormals-001
+family: fp-semantics
+features: [denormal_handling]
+oracle: spec
+tolerance: bit-exact
+expect: output
+timeout_s: 60

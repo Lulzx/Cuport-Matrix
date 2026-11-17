@@ -1,0 +1,7 @@
+id: fp-semantics/fp64-emulation-001
+family: fp-semantics
+features: [fp64_emulation_presence]
+oracle: spec
+tolerance: bit-exact
+expect: output
+timeout_s: 60

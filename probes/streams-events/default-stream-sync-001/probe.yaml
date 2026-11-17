@@ -1,0 +1,7 @@
+id: streams-events/default-stream-sync-001
+family: streams-events
+features: [default_stream_sync]
+oracle: spec
+tolerance: bit-exact
+expect: output
+timeout_s: 60

@@ -31,6 +31,8 @@ typedef enum cudaError {
     cudaErrorInvalidValue = 1,
     cudaErrorMemoryAllocation = 2,
     cudaErrorInvalidConfiguration = 9,
+    cudaErrorInvalidResourceHandle = 400,
+    cudaErrorNotReady = 600,
     cudaErrorAssert = 710,
     cudaErrorLaunchFailure = 719,
     cudaErrorNotSupported = 801,
@@ -44,6 +46,8 @@ enum cudaLimit { cudaLimitStackSize, cudaLimitPrintfFifoSize, cudaLimitMallocHea
 typedef struct CUstream_st *cudaStream_t;
 typedef struct CUevent_st *cudaEvent_t;
 #define cudaStreamNonBlocking 0x01
+#define cudaEventDefault 0x00
+#define cudaEventDisableTiming 0x02
 
 // ---- texture objects (CUDA 12 object API; references were removed) --------
 typedef unsigned long long cudaTextureObject_t;
@@ -106,6 +110,7 @@ cudaError_t cudaStreamDestroy(cudaStream_t s);
 cudaError_t cudaStreamSynchronize(cudaStream_t s);
 cudaError_t cudaStreamWaitEvent(cudaStream_t s, cudaEvent_t e, unsigned flags = 0);
 cudaError_t cudaEventCreate(cudaEvent_t *e);
+cudaError_t cudaEventCreateWithFlags(cudaEvent_t *e, unsigned flags);
 cudaError_t cudaEventDestroy(cudaEvent_t e);
 cudaError_t cudaEventRecord(cudaEvent_t e, cudaStream_t s = 0);
 cudaError_t cudaEventSynchronize(cudaEvent_t e);
@@ -190,7 +195,19 @@ __device__ float __fadd_rz(float a, float b);
 __device__ float __fadd_ru(float a, float b);
 __device__ float __fadd_rd(float a, float b);
 __device__ float __fdiv_rn(float a, float b);
+__device__ float __fdiv_rz(float a, float b);
+__device__ float __fdiv_ru(float a, float b);
+__device__ float __fdiv_rd(float a, float b);
 __device__ float __fsqrt_rn(float a);
+__device__ float __fsqrt_rz(float a);
+__device__ float __fsqrt_ru(float a);
+__device__ float __fsqrt_rd(float a);
+__device__ float __fmul_rz(float a, float b);
+__device__ float __fmul_ru(float a, float b);
+__device__ float __fmul_rd(float a, float b);
+__device__ float __fmaf_rz(float a, float b, float c);
+__device__ float __fmaf_ru(float a, float b, float c);
+__device__ float __fmaf_rd(float a, float b, float c);
 __device__ float __sinf(float x);
 __device__ float __cosf(float x);
 __device__ float __expf(float x);
@@ -201,6 +218,7 @@ __device__ float expf(float x);
 __device__ float logf(float x);
 __device__ float fmaf(float a, float b, float c);
 __device__ float sqrtf(float x);
+__device__ float fabsf(float x);
 __device__ double fma(double a, double b, double c);
 __device__ double __dadd_rn(double a, double b);
 __device__ double __dmul_rn(double a, double b);

@@ -1,0 +1,7 @@
+id: fp-semantics/half-bf16-001
+family: fp-semantics
+features: [half_bf16_conversions]
+oracle: spec
+tolerance: bit-exact
+expect: output
+timeout_s: 60

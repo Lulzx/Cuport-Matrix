@@ -1,0 +1,7 @@
+id: streams-events/event-timing-001
+family: streams-events
+features: [event_elapsed_time]
+oracle: spec
+tolerance: bit-exact
+expect: output
+timeout_s: 60

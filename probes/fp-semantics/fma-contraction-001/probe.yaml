@@ -1,0 +1,7 @@
+id: fp-semantics/fma-contraction-001
+family: fp-semantics
+features: [fma_contraction_default]
+oracle: spec
+tolerance: bit-exact
+expect: output
+timeout_s: 60
