@@ -26,7 +26,7 @@ Registering a repository runner needs admin rights on
    is the one the job selects on.
 
 The service runs as Vivian's user, so it finds the tools in
-`~/.local/cuport-tools` (built by `build-tools.sh` at the pins in
+`~/.local/cuport-tools` (built by `.github/scripts/build-tools.sh` at the pins in
 `matrix/tools.yaml`) and `uv` in `~/.local/bin`. Set `CUPORT_TOOLS` in the
 runner's `.env` file if the tools live elsewhere.
 

@@ -1,18 +1,19 @@
-# Cuport-Matrix CI skeleton.
+# Cuport-Matrix lanes.
 #
-# Two lanes are planned:
-#   hosted   - GitHub-hosted macOS arm64 runner. Metal is exposed through an
-#              "Apple Paravirtual device" (GPU family ~5, 32 KB threadgroup
-#              memory, no simdgroup-matrix / bf16). It is a FEATURE SUBSET of
-#              real Apple silicon, so its rows are tagged hardware=paravirtual.
-#   m6-self  - self-hosted Apple M6 Mac mini (hardware=m6-12c). Runs
-#              .github/scripts/m6-lane.sh when dispatched with m6: true.
-#
-# The hosted lane is still a skeleton (TODO steps below).
+#   hosted-paravirtual - GitHub-hosted macOS arm64 runner. Metal is exposed
+#                        through an "Apple Paravirtual device" (a FEATURE
+#                        SUBSET of real Apple silicon), so its rows are tagged
+#                        hardware=paravirtual. Runs nightly and on dispatch;
+#                        the nightly run commits its rows and the regenerated
+#                        scoreboard to main.
+#   m6-self-hosted     - self-hosted Apple M6 Mac mini (hardware=m6-12c). Runs
+#                        .github/scripts/m6-lane.sh when dispatched with m6: true.
 
 name: matrix
 
 on:
+  schedule:
+    - cron: "17 3 * * *"   # nightly, 03:17 UTC
   workflow_dispatch:
     inputs:
       tool:
@@ -24,34 +25,76 @@ on:
         type: boolean
         required: false
         default: false
+      commit:
+        description: "Commit the paravirtual rows and scoreboard to main"
+        type: boolean
+        required: false
+        default: false
+
+concurrency:
+  group: matrix-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   hosted-paravirtual:
     name: hosted xcode-27 (paravirtual GPU)
     runs-on: xcode-27
+    timeout-minutes: 120
+    permissions:
+      contents: write
+    env:
+      TOOL: ${{ inputs.tool || 'all' }}
     steps:
       - uses: actions/checkout@v4
 
-      - name: Describe GPU
-        run: |
-          system_profiler SPDisplaysDataType || true
-          sw_vers
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
 
-      - name: Install tools (pinned in matrix/tools.yaml)
-        run: |
-          echo "TODO: install CuMetal and mvcc at the pinned tags"
+      - name: Restore built tools
+        uses: actions/cache@v4
+        with:
+          path: ~/.local/cuport-tools
+          key: cuport-tools-${{ runner.os }}-${{ hashFiles('matrix/tools.yaml', '.github/scripts/build-tools.sh') }}
 
-      - name: Run probes
-        run: |
-          echo "TODO: run probes/ against ${{ github.event.inputs.tool }}"
-          echo "TODO: write results/<tool>/paravirtual/<date>.json"
+      - name: Build tools (pinned in matrix/tools.yaml)
+        run: .github/scripts/build-tools.sh "$TOOL"
+
+      # Runs even if one tool failed to build: the other still gets a row.
+      - name: Run probes and validate rows
+        if: ${{ !cancelled() }}
+        run: .github/scripts/hosted-lane.sh "$TOOL"
 
       - name: Upload results
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: results-paravirtual
-          path: results/
+          path: results/*/paravirtual/
           if-no-files-found: ignore
+
+      - name: Commit rows and scoreboard
+        if: ${{ !cancelled() && (github.event_name == 'schedule' || inputs.commit) }}
+        run: |
+          if ! ls results/*/paravirtual/*.json >/dev/null 2>&1; then
+            echo "no paravirtual rows to commit"
+            exit 0
+          fi
+          PYTHONPATH=runner .venv/bin/python -m cuport scoreboard
+          git config user.name "cuport-matrix[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add results/*/paravirtual/ docs/scoreboard.md
+          if git diff --cached --quiet; then
+            echo "nothing to commit"
+            exit 0
+          fi
+          git commit -m "exp: paravirtual rows $(date -u +%F)"
+          git pull --rebase -q origin "${GITHUB_REF_NAME}"
+          PYTHONPATH=runner .venv/bin/python -m cuport scoreboard --check || {
+            PYTHONPATH=runner .venv/bin/python -m cuport scoreboard
+            git commit -q --amend --no-edit docs/scoreboard.md
+          }
+          git push origin "HEAD:${GITHUB_REF_NAME}"
 
   # Runs only when asked for, so a dispatch does not queue forever while the
   # M6 is offline. Registration steps: docs/m6-runner.md.

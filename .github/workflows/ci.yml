@@ -1,0 +1,38 @@
+# Checks that need no GPU: runner unit tests, probe metadata and oracles,
+# a clang parse of every probe.cu against runner/cuda_stub, row validity,
+# and that docs/scoreboard.md matches the committed rows.
+
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      PYTHONPATH: runner
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install requirements
+        run: python -m pip install -q -r runner/requirements.txt
+
+      - name: Unit tests
+        run: python -m pytest runner -q
+
+      - name: Probes and oracles
+        run: python -m cuport check --syntax
+
+      - name: Result rows
+        run: python -m cuport validate results/*/*/*.json
+
+      - name: Scoreboard is current
+        run: python -m cuport scoreboard --check
