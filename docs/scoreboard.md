@@ -10,9 +10,9 @@ divergence is explained in `docs/divergences.md`.
 | Tool | Hardware | Date | Repo commit | bit-exact | within-tolerance | documented-divergence | undocumented-divergence | refused-with-diagnostic | silently-wrong | crash-hang | not-run |
 |---|---|---|---|--:|--:|--:|--:|--:|--:|--:|--:|
 | mvcc v1.3.0 | `m6-12c` | [2026-11-17](../results/mvcc/m6-12c/2026-11-17.json) | `518cea7` | 29 | 2 | 1 | 2 | 8 | 0 | 0 | 0 |
-| mvcc v1.3.0 | `paravirtual` | [2026-11-17](../results/mvcc/paravirtual/2026-11-17.json) | `675e85a` | 2 | 0 | 1 | 2 | 8 | 29 | 0 | 0 |
+| mvcc v1.3.0 | `paravirtual` | [2026-11-17](../results/mvcc/paravirtual/2026-11-17.json) | `14d646f` | 0 | 0 | 0 | 0 | 42 | 0 | 0 | 0 |
 | cumetal v0.8.0 | `m6-12c` | [2026-11-17](../results/cumetal/m6-12c/2026-11-17.json) | `518cea7` | 27 | 2 | 3 | 5 | 5 | 0 | 0 | 0 |
-| cumetal v0.8.0 | `paravirtual` | [2026-11-17](../results/cumetal/paravirtual/2026-11-17.json) | `675e85a` | 26 | 2 | 1 | 3 | 5 | 5 | 0 | 0 |
+| cumetal v0.8.0 | `paravirtual` | [2026-11-17](../results/cumetal/paravirtual/2026-11-17.json) | `14d646f` | 0 | 0 | 0 | 0 | 0 | 0 | 42 | 0 |
 
 ## Milestone v0 criteria
 
@@ -20,7 +20,7 @@ divergence is explained in `docs/divergences.md`.
 |---|---|---|
 | Cells classified (not `not-run`) | at least 90 % of 42 probes x 2 tools x 2 lanes = 168 | 168 of 168 (100.0 %) |
 | Undocumented divergences acknowledged upstream | at least 3 | 7 issues |
-| Hosted-vs-M6 disagreement rate | reported as a number | 34 of 84 probes (40.5 %) |
+| Hosted-vs-M6 disagreement rate | reported as a number | 76 of 84 probes (90.5 %) |
 
 ## Hosted-vs-M6 disagreement
 
@@ -31,46 +31,88 @@ otherwise; it is never folded into the M6 result.
 
 | Tool | Compared | Differ | Rate |
 |---|--:|--:|--:|
-| mvcc | 42 | 29 | 69.0 % |
-| cumetal | 42 | 5 | 11.9 % |
-| **all** | 84 | 34 | **40.5 %** |
+| mvcc | 42 | 34 | 81.0 % |
+| cumetal | 42 | 42 | 100.0 % |
+| **all** | 84 | 76 | **90.5 %** |
 
 | Tool | Probe | `paravirtual` | `m6-12c` |
 |---|---|---|---|
-| mvcc | `atomics/atomic-64bit-001` | silently-wrong | bit-exact |
-| mvcc | `atomics/atomic-add-001` | silently-wrong | bit-exact |
-| mvcc | `atomics/cas-loop-001` | silently-wrong | bit-exact |
-| mvcc | `atomics/min-max-unsigned-001` | silently-wrong | bit-exact |
-| mvcc | `atomics/shared-contention-001` | silently-wrong | bit-exact |
-| mvcc | `fp-semantics/denormals-001` | silently-wrong | bit-exact |
-| mvcc | `fp-semantics/fast-expf-001` | silently-wrong | within-tolerance |
-| mvcc | `fp-semantics/fast-fdividef-001` | silently-wrong | bit-exact |
-| mvcc | `fp-semantics/fast-sinf-001` | silently-wrong | within-tolerance |
-| mvcc | `fp-semantics/fma-contraction-001` | silently-wrong | bit-exact |
-| mvcc | `fp-semantics/half-bf16-001` | silently-wrong | bit-exact |
-| mvcc | `launch-geometry/dim3-3d-001` | silently-wrong | bit-exact |
-| mvcc | `launch-geometry/dynamic-shared-size-001` | silently-wrong | bit-exact |
-| mvcc | `launch-geometry/large-grid-001` | silently-wrong | bit-exact |
-| mvcc | `launch-geometry/thread-block-index-001` | silently-wrong | bit-exact |
-| mvcc | `launch-geometry/zero-size-launch-001` | silently-wrong | bit-exact |
-| mvcc | `limits-refusals/inline-ptx-001` | silently-wrong | bit-exact |
-| mvcc | `shared-memory-barriers/dynamic-shared-001` | silently-wrong | bit-exact |
-| mvcc | `shared-memory-barriers/shared-32kb-001` | silently-wrong | bit-exact |
-| mvcc | `shared-memory-barriers/static-shared-001` | silently-wrong | bit-exact |
-| mvcc | `shared-memory-barriers/syncthreads-reduction-001` | silently-wrong | bit-exact |
-| mvcc | `streams-events/default-stream-sync-001` | silently-wrong | bit-exact |
-| mvcc | `streams-events/stream-ordering-001` | silently-wrong | bit-exact |
-| mvcc | `warp-primitives/ballot-any-all-001` | silently-wrong | bit-exact |
-| mvcc | `warp-primitives/match-any-001` | silently-wrong | bit-exact |
-| mvcc | `warp-primitives/partial-warp-001` | silently-wrong | bit-exact |
-| mvcc | `warp-primitives/shfl-variants-001` | silently-wrong | bit-exact |
-| mvcc | `warp-primitives/shfl-xor-width-001` | silently-wrong | bit-exact |
-| mvcc | `warp-primitives/warp-reduce-add-001` | silently-wrong | bit-exact |
-| cumetal | `fp-semantics/denormals-001` | silently-wrong | documented-divergence |
-| cumetal | `fp-semantics/fma-contraction-001` | silently-wrong | undocumented-divergence |
-| cumetal | `fp-semantics/fp64-emulation-001` | silently-wrong | documented-divergence |
-| cumetal | `limits-refusals/texture-object-001` | silently-wrong | bit-exact |
-| cumetal | `streams-events/event-timing-001` | silently-wrong | undocumented-divergence |
+| mvcc | `atomics/atomic-64bit-001` | refused-with-diagnostic | bit-exact |
+| mvcc | `atomics/atomic-add-001` | refused-with-diagnostic | bit-exact |
+| mvcc | `atomics/cas-loop-001` | refused-with-diagnostic | bit-exact |
+| mvcc | `atomics/min-max-unsigned-001` | refused-with-diagnostic | bit-exact |
+| mvcc | `atomics/shared-contention-001` | refused-with-diagnostic | bit-exact |
+| mvcc | `device-services/printf-001` | refused-with-diagnostic | documented-divergence |
+| mvcc | `fp-semantics/denormals-001` | refused-with-diagnostic | bit-exact |
+| mvcc | `fp-semantics/fast-expf-001` | refused-with-diagnostic | within-tolerance |
+| mvcc | `fp-semantics/fast-fdividef-001` | refused-with-diagnostic | bit-exact |
+| mvcc | `fp-semantics/fast-sinf-001` | refused-with-diagnostic | within-tolerance |
+| mvcc | `fp-semantics/fma-contraction-001` | refused-with-diagnostic | bit-exact |
+| mvcc | `fp-semantics/half-bf16-001` | refused-with-diagnostic | bit-exact |
+| mvcc | `launch-geometry/dim3-3d-001` | refused-with-diagnostic | bit-exact |
+| mvcc | `launch-geometry/dynamic-shared-size-001` | refused-with-diagnostic | bit-exact |
+| mvcc | `launch-geometry/large-grid-001` | refused-with-diagnostic | bit-exact |
+| mvcc | `launch-geometry/thread-block-index-001` | refused-with-diagnostic | bit-exact |
+| mvcc | `launch-geometry/zero-size-launch-001` | refused-with-diagnostic | bit-exact |
+| mvcc | `limits-refusals/inline-ptx-001` | refused-with-diagnostic | bit-exact |
+| mvcc | `limits-refusals/oversized-shared-001` | refused-with-diagnostic | undocumented-divergence |
+| mvcc | `shared-memory-barriers/dynamic-shared-001` | refused-with-diagnostic | bit-exact |
+| mvcc | `shared-memory-barriers/shared-32kb-001` | refused-with-diagnostic | bit-exact |
+| mvcc | `shared-memory-barriers/static-shared-001` | refused-with-diagnostic | bit-exact |
+| mvcc | `shared-memory-barriers/syncthreads-count-001` | refused-with-diagnostic | undocumented-divergence |
+| mvcc | `shared-memory-barriers/syncthreads-reduction-001` | refused-with-diagnostic | bit-exact |
+| mvcc | `streams-events/async-memcpy-overlap-001` | refused-with-diagnostic | bit-exact |
+| mvcc | `streams-events/default-stream-sync-001` | refused-with-diagnostic | bit-exact |
+| mvcc | `streams-events/event-timing-001` | refused-with-diagnostic | bit-exact |
+| mvcc | `streams-events/stream-ordering-001` | refused-with-diagnostic | bit-exact |
+| mvcc | `warp-primitives/ballot-any-all-001` | refused-with-diagnostic | bit-exact |
+| mvcc | `warp-primitives/match-any-001` | refused-with-diagnostic | bit-exact |
+| mvcc | `warp-primitives/partial-warp-001` | refused-with-diagnostic | bit-exact |
+| mvcc | `warp-primitives/shfl-variants-001` | refused-with-diagnostic | bit-exact |
+| mvcc | `warp-primitives/shfl-xor-width-001` | refused-with-diagnostic | bit-exact |
+| mvcc | `warp-primitives/warp-reduce-add-001` | refused-with-diagnostic | bit-exact |
+| cumetal | `atomics/atomic-64bit-001` | crash-hang | bit-exact |
+| cumetal | `atomics/atomic-add-001` | crash-hang | bit-exact |
+| cumetal | `atomics/cas-loop-001` | crash-hang | bit-exact |
+| cumetal | `atomics/min-max-unsigned-001` | crash-hang | bit-exact |
+| cumetal | `atomics/shared-contention-001` | crash-hang | bit-exact |
+| cumetal | `device-services/assert-001` | crash-hang | documented-divergence |
+| cumetal | `device-services/clock64-001` | crash-hang | bit-exact |
+| cumetal | `device-services/malloc-free-001` | crash-hang | bit-exact |
+| cumetal | `device-services/printf-001` | crash-hang | refused-with-diagnostic |
+| cumetal | `fp-semantics/denormals-001` | crash-hang | documented-divergence |
+| cumetal | `fp-semantics/fast-expf-001` | crash-hang | within-tolerance |
+| cumetal | `fp-semantics/fast-fdividef-001` | crash-hang | bit-exact |
+| cumetal | `fp-semantics/fast-sinf-001` | crash-hang | within-tolerance |
+| cumetal | `fp-semantics/fma-contraction-001` | crash-hang | undocumented-divergence |
+| cumetal | `fp-semantics/fp64-emulation-001` | crash-hang | documented-divergence |
+| cumetal | `fp-semantics/half-bf16-001` | crash-hang | refused-with-diagnostic |
+| cumetal | `fp-semantics/rounding-modes-001` | crash-hang | bit-exact |
+| cumetal | `launch-geometry/dim3-3d-001` | crash-hang | bit-exact |
+| cumetal | `launch-geometry/dynamic-shared-size-001` | crash-hang | bit-exact |
+| cumetal | `launch-geometry/large-grid-001` | crash-hang | bit-exact |
+| cumetal | `launch-geometry/thread-block-index-001` | crash-hang | bit-exact |
+| cumetal | `launch-geometry/zero-size-launch-001` | crash-hang | undocumented-divergence |
+| cumetal | `limits-refusals/cooperative-grid-sync-001` | crash-hang | refused-with-diagnostic |
+| cumetal | `limits-refusals/dynamic-parallelism-001` | crash-hang | refused-with-diagnostic |
+| cumetal | `limits-refusals/inline-ptx-001` | crash-hang | bit-exact |
+| cumetal | `limits-refusals/oversized-shared-001` | crash-hang | undocumented-divergence |
+| cumetal | `limits-refusals/texture-object-001` | crash-hang | bit-exact |
+| cumetal | `shared-memory-barriers/dynamic-shared-001` | crash-hang | bit-exact |
+| cumetal | `shared-memory-barriers/shared-32kb-001` | crash-hang | bit-exact |
+| cumetal | `shared-memory-barriers/static-shared-001` | crash-hang | bit-exact |
+| cumetal | `shared-memory-barriers/syncthreads-count-001` | crash-hang | refused-with-diagnostic |
+| cumetal | `shared-memory-barriers/syncthreads-reduction-001` | crash-hang | bit-exact |
+| cumetal | `streams-events/async-memcpy-overlap-001` | crash-hang | bit-exact |
+| cumetal | `streams-events/default-stream-sync-001` | crash-hang | bit-exact |
+| cumetal | `streams-events/event-timing-001` | crash-hang | undocumented-divergence |
+| cumetal | `streams-events/stream-ordering-001` | crash-hang | bit-exact |
+| cumetal | `warp-primitives/ballot-any-all-001` | crash-hang | bit-exact |
+| cumetal | `warp-primitives/match-any-001` | crash-hang | bit-exact |
+| cumetal | `warp-primitives/partial-warp-001` | crash-hang | bit-exact |
+| cumetal | `warp-primitives/shfl-variants-001` | crash-hang | bit-exact |
+| cumetal | `warp-primitives/shfl-xor-width-001` | crash-hang | undocumented-divergence |
+| cumetal | `warp-primitives/warp-reduce-add-001` | crash-hang | bit-exact |
 
 ## Probe matrix
 
@@ -81,62 +123,62 @@ probe (`probes/<family>/<id>/reference/`); every drop matches the probe's oracle
 | Probe | mvcc `m6-12c` | mvcc `paravirtual` | cumetal `m6-12c` | cumetal `paravirtual` | NVIDIA |
 |---|:-:|:-:|:-:|:-:|---|
 | **atomics** | | | | | |
-| `atomic-64bit-001` | exact | **WRONG** | exact | exact | · |
-| `atomic-add-001` | exact | **WRONG** | exact | exact | · |
-| `cas-loop-001` | exact | **WRONG** | exact | exact | · |
-| `min-max-unsigned-001` | exact | **WRONG** | exact | exact | · |
-| `shared-contention-001` | exact | **WRONG** | exact | exact | · |
+| `atomic-64bit-001` | exact | refused | exact | **crash** | · |
+| `atomic-add-001` | exact | refused | exact | **crash** | · |
+| `cas-loop-001` | exact | refused | exact | **crash** | · |
+| `min-max-unsigned-001` | exact | refused | exact | **crash** | · |
+| `shared-contention-001` | exact | refused | exact | **crash** | · |
 | **device-services** | | | | | |
-| `assert-001` | refused | refused | doc-div | doc-div | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
-| `clock64-001` | refused | refused | exact | exact | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
-| `malloc-free-001` | refused | refused | exact | exact | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
-| `printf-001` | doc-div | doc-div | refused | refused | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
+| `assert-001` | refused | refused | doc-div | **crash** | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
+| `clock64-001` | refused | refused | exact | **crash** | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
+| `malloc-free-001` | refused | refused | exact | **crash** | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
+| `printf-001` | doc-div | refused | refused | **crash** | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
 | **fp-semantics** | | | | | |
-| `denormals-001` | exact | **WRONG** | doc-div | **WRONG** | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
-| `fast-expf-001` | tol | **WRONG** | tol | tol | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
-| `fast-fdividef-001` | exact | **WRONG** | exact | exact | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
-| `fast-sinf-001` | tol | **WRONG** | tol | tol | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
-| `fma-contraction-001` | exact | **WRONG** | **UNDOC** | **WRONG** | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
-| `fp64-emulation-001` | refused | refused | doc-div | **WRONG** | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
-| `half-bf16-001` | exact | **WRONG** | refused | refused | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
-| `rounding-modes-001` | refused | refused | exact | exact | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
+| `denormals-001` | exact | refused | doc-div | **crash** | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
+| `fast-expf-001` | tol | refused | tol | **crash** | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
+| `fast-fdividef-001` | exact | refused | exact | **crash** | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
+| `fast-sinf-001` | tol | refused | tol | **crash** | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
+| `fma-contraction-001` | exact | refused | **UNDOC** | **crash** | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
+| `fp64-emulation-001` | refused | refused | doc-div | **crash** | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
+| `half-bf16-001` | exact | refused | refused | **crash** | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
+| `rounding-modes-001` | refused | refused | exact | **crash** | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
 | **launch-geometry** | | | | | |
-| `dim3-3d-001` | exact | **WRONG** | exact | exact | · |
-| `dynamic-shared-size-001` | exact | **WRONG** | exact | exact | · |
-| `large-grid-001` | exact | **WRONG** | exact | exact | · |
-| `thread-block-index-001` | exact | **WRONG** | exact | exact | · |
-| `zero-size-launch-001` | exact | **WRONG** | **UNDOC** | **UNDOC** | · |
+| `dim3-3d-001` | exact | refused | exact | **crash** | · |
+| `dynamic-shared-size-001` | exact | refused | exact | **crash** | · |
+| `large-grid-001` | exact | refused | exact | **crash** | · |
+| `thread-block-index-001` | exact | refused | exact | **crash** | · |
+| `zero-size-launch-001` | exact | refused | **UNDOC** | **crash** | · |
 | **limits-refusals** | | | | | |
-| `cooperative-grid-sync-001` | refused | refused | refused | refused | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
-| `dynamic-parallelism-001` | refused | refused | refused | refused | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
-| `inline-ptx-001` | exact | **WRONG** | exact | exact | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
-| `oversized-shared-001` | **UNDOC** | **UNDOC** | **UNDOC** | **UNDOC** | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
-| `texture-object-001` | refused | refused | exact | **WRONG** | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
+| `cooperative-grid-sync-001` | refused | refused | refused | **crash** | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
+| `dynamic-parallelism-001` | refused | refused | refused | **crash** | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
+| `inline-ptx-001` | exact | refused | exact | **crash** | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
+| `oversized-shared-001` | **UNDOC** | refused | **UNDOC** | **crash** | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
+| `texture-object-001` | refused | refused | exact | **crash** | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
 | **shared-memory-barriers** | | | | | |
-| `dynamic-shared-001` | exact | **WRONG** | exact | exact | · |
-| `shared-32kb-001` | exact | **WRONG** | exact | exact | · |
-| `static-shared-001` | exact | **WRONG** | exact | exact | · |
-| `syncthreads-count-001` | **UNDOC** | **UNDOC** | refused | refused | · |
-| `syncthreads-reduction-001` | exact | **WRONG** | exact | exact | · |
+| `dynamic-shared-001` | exact | refused | exact | **crash** | · |
+| `shared-32kb-001` | exact | refused | exact | **crash** | · |
+| `static-shared-001` | exact | refused | exact | **crash** | · |
+| `syncthreads-count-001` | **UNDOC** | refused | refused | **crash** | · |
+| `syncthreads-reduction-001` | exact | refused | exact | **crash** | · |
 | **streams-events** | | | | | |
-| `async-memcpy-overlap-001` | exact | exact | exact | exact | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
-| `default-stream-sync-001` | exact | **WRONG** | exact | exact | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
-| `event-timing-001` | exact | exact | **UNDOC** | **WRONG** | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
-| `stream-ordering-001` | exact | **WRONG** | exact | exact | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
+| `async-memcpy-overlap-001` | exact | refused | exact | **crash** | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
+| `default-stream-sync-001` | exact | refused | exact | **crash** | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
+| `event-timing-001` | exact | refused | **UNDOC** | **crash** | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
+| `stream-ordering-001` | exact | refused | exact | **crash** | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
 | **warp-primitives** | | | | | |
-| `ballot-any-all-001` | exact | **WRONG** | exact | exact | · |
-| `match-any-001` | exact | **WRONG** | exact | exact | · |
-| `partial-warp-001` | exact | **WRONG** | exact | exact | · |
-| `shfl-variants-001` | exact | **WRONG** | exact | exact | · |
-| `shfl-xor-width-001` | exact | **WRONG** | **UNDOC** | **UNDOC** | · |
-| `warp-reduce-add-001` | exact | **WRONG** | exact | exact | · |
+| `ballot-any-all-001` | exact | refused | exact | **crash** | · |
+| `match-any-001` | exact | refused | exact | **crash** | · |
+| `partial-warp-001` | exact | refused | exact | **crash** | · |
+| `shfl-variants-001` | exact | refused | exact | **crash** | · |
+| `shfl-xor-width-001` | exact | refused | **UNDOC** | **crash** | · |
+| `warp-reduce-add-001` | exact | refused | exact | **crash** | · |
 
 ## Upstream issues
 
 - cumetal, `fp-semantics/fma-contraction-001` (`m6-12c`): https://github.com/Lulzx/cuda-metal/issues/208
-- cumetal, `launch-geometry/zero-size-launch-001` (`m6-12c`, `paravirtual`): https://github.com/Lulzx/cuda-metal/issues/207
-- cumetal, `limits-refusals/oversized-shared-001` (`m6-12c`, `paravirtual`): https://github.com/Lulzx/cuda-metal/issues/205
+- cumetal, `launch-geometry/zero-size-launch-001` (`m6-12c`): https://github.com/Lulzx/cuda-metal/issues/207
+- cumetal, `limits-refusals/oversized-shared-001` (`m6-12c`): https://github.com/Lulzx/cuda-metal/issues/205
 - cumetal, `streams-events/event-timing-001` (`m6-12c`): https://github.com/Lulzx/cuda-metal/issues/209
-- cumetal, `warp-primitives/shfl-xor-width-001` (`m6-12c`, `paravirtual`): https://github.com/Lulzx/cuda-metal/issues/206
-- mvcc, `limits-refusals/oversized-shared-001` (`m6-12c`, `paravirtual`): https://github.com/doximity/mvcc/issues/21
-- mvcc, `shared-memory-barriers/syncthreads-count-001` (`m6-12c`, `paravirtual`): https://github.com/doximity/mvcc/issues/20
+- cumetal, `warp-primitives/shfl-xor-width-001` (`m6-12c`): https://github.com/Lulzx/cuda-metal/issues/206
+- mvcc, `limits-refusals/oversized-shared-001` (`m6-12c`): https://github.com/doximity/mvcc/issues/21
+- mvcc, `shared-memory-barriers/syncthreads-count-001` (`m6-12c`): https://github.com/doximity/mvcc/issues/20
