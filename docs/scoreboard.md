@@ -92,14 +92,14 @@ probe (`probes/<family>/<id>/reference/`); every drop matches the probe's oracle
 | `malloc-free-001` | refused | refused | exact | exact | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
 | `printf-001` | doc-div | doc-div | refused | refused | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
 | **fp-semantics** | | | | | |
-| `denormals-001` | exact | **WRONG** | doc-div | **WRONG** | rtx4500ada-cuda13.5 |
+| `denormals-001` | exact | **WRONG** | doc-div | **WRONG** | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
 | `fast-expf-001` | tol | **WRONG** | tol | tol | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
 | `fast-fdividef-001` | exact | **WRONG** | exact | exact | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
 | `fast-sinf-001` | tol | **WRONG** | tol | tol | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
-| `fma-contraction-001` | exact | **WRONG** | **UNDOC** | **WRONG** | rtx4500ada-cuda13.5 |
-| `fp64-emulation-001` | refused | refused | doc-div | **WRONG** | rtx4500ada-cuda13.5 |
-| `half-bf16-001` | exact | **WRONG** | refused | refused | rtx4500ada-cuda13.5 |
-| `rounding-modes-001` | refused | refused | exact | exact | rtx4500ada-cuda13.5 |
+| `fma-contraction-001` | exact | **WRONG** | **UNDOC** | **WRONG** | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
+| `fp64-emulation-001` | refused | refused | doc-div | **WRONG** | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
+| `half-bf16-001` | exact | **WRONG** | refused | refused | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
+| `rounding-modes-001` | refused | refused | exact | exact | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
 | **launch-geometry** | | | | | |
 | `dim3-3d-001` | exact | **WRONG** | exact | exact | · |
 | `dynamic-shared-size-001` | exact | **WRONG** | exact | exact | · |
@@ -120,8 +120,8 @@ probe (`probes/<family>/<id>/reference/`); every drop matches the probe's oracle
 | `syncthreads-reduction-001` | exact | **WRONG** | exact | exact | · |
 | **streams-events** | | | | | |
 | `async-memcpy-overlap-001` | exact | exact | exact | exact | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
-| `default-stream-sync-001` | exact | **WRONG** | exact | exact | rtx4500ada-cuda13.5 |
-| `event-timing-001` | exact | exact | **UNDOC** | **WRONG** | rtx4500ada-cuda13.5 |
+| `default-stream-sync-001` | exact | **WRONG** | exact | exact | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
+| `event-timing-001` | exact | exact | **UNDOC** | **WRONG** | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
 | `stream-ordering-001` | exact | **WRONG** | exact | exact | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
 | **warp-primitives** | | | | | |
 | `ballot-any-all-001` | exact | **WRONG** | exact | exact | · |
