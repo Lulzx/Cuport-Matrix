@@ -180,7 +180,7 @@ gantt
   fp-semantics                         :done, f5, 2026-11-16, 2d
   streams-events                       :done, f6, 2026-11-16, 2d
   section Lanes
-  m6-12c rows (35 probes)              :done, l1, 2026-11-16, 1d
+  m6-12c rows (42 probes)              :done, l1, 2026-11-16, 2d
   Self-hosted M6 job                   :done, l2, 2026-11-16, 1d
   Hosted paravirtual lane, nightly     :done, l3, 2026-11-17, 1d
   section Catalogue
@@ -192,25 +192,26 @@ gantt
 | Runner, schema, adapters (mvcc, CuMetal, nvcc) | done |
 | 42 probes in 8 families, every oracle checked by `cuport check` | done |
 | NVIDIA reference drops (`rtx4500ada-cuda13.5`, `rtx4090-cuda12.6`), every pair compared agrees | done |
-| `m6-12c` rows for both tools | done for the first 35 probes |
+| `m6-12c` rows for both tools | done for all 42 probes; the self-hosted runner `m6-12c` is registered |
 | Hosted `paravirtual` lane, nightly, commits its own rows | done |
 | Scoreboard with v0 criteria and hosted-vs-M6 disagreement rate | done |
 | Divergence catalogue; 5 upstream issues (mvcc#20, #21; cuda-metal#205, #206, #207) | done |
 
-From the first hosted run (2026-11-17), 154 of 168 v0 cells are classified
-(91.7 %, target 90 %). The hosted-vs-M6 disagreement rate is **26 of 70
-probes (37.1 %)**: mvcc 25 of 35 (71.4 %), CuMetal 1 of 35 (2.9 %). On the
+With the 2026-11-17 rows from both lanes, 168 of 168 v0 cells are
+classified (100 %, target 90 %). The hosted-vs-M6 disagreement rate is
+**32 of 84 probes (38.1 %)**: mvcc 29 of 42 (69.0 %), CuMetal 3 of 42 (7.1 %).
+Two of CuMetal's three are triage timing: the hosted rows predate the FP64
+triage entries and will match after the next nightly run. On the
 paravirtual GPU most mvcc kernels leave their output buffers untouched, so
 probes that are bit-exact on the M6 read back zeros; the cause is not yet
 investigated. The per-probe list is in [docs/scoreboard.md](docs/scoreboard.md).
 
-### 4 things remain open
+### 3 things remain open
 
 | Item | Owner | Why it is open |
 |---|---|---|
-| `m6-12c` rows for the 7 newest probes (`fp-semantics` fma-contraction, denormals, fp64-emulation, half-bf16, rounding-modes; `streams-events` event-timing, default-stream-sync) | Vivian (M6) | The M6 is the only real Apple silicon lane; the rows land with the next M6 run |
-| RTX 4090 reference drops for the same 7 probes | Vivian (RTX 4090s) | The RTX 4500 Ada drops exist; a second card is needed for the two-card check |
-| Self-hosted runner registration token | Guru, then Vivian | Needs repo admin: `gh api -X POST repos/guru-bharadwaj20/Cuport-Matrix/actions/runners/registration-token`, then `docs/m6-runner.md` |
+| RTX 4090 reference drops for the 7 newest probes (`fp-semantics` fma-contraction, denormals, fp64-emulation, half-bf16, rounding-modes; `streams-events` event-timing, default-stream-sync) | Vivian (RTX 4090s) | The RTX 4500 Ada drops exist; a second card is needed for the two-card check |
+| Upstream issues for CuMetal `fma-contraction-001` (`__fmul_rn`/`__fadd_rn` fused) and `event-timing-001` (error 1 instead of 400) | Vivian | Drafted and reproduced; the two cells stay `silently-wrong` until filed |
 | Linux negative control for `streams-events/default-stream-sync-001` | either, on a Linux NVIDIA box | Under WDDM on Windows the non-blocking and per-thread-stream variants also serialise, so the control could not show a race there |
 
 ### What CI proves
