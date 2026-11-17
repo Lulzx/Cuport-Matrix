@@ -6,6 +6,7 @@
     validate FILE...          validate result rows
     refdrop --tag TAG         capture reference drops using stock nvcc
     refcompare --a A --b B    compare two sets of reference drops
+    scoreboard [--check]      write docs/scoreboard.md from results/ (--check: fail if stale)
 """
 
 from __future__ import annotations
@@ -255,6 +256,29 @@ def cmd_refcompare(args) -> int:
     return 1 if differ > 0 else 0
 
 
+def cmd_scoreboard(args) -> int:
+    from cuport.scoreboard import build
+
+    _, probes, errors = _load(args.root)
+    if errors:
+        for e in errors:
+            print("ERROR", e)
+        return 1
+    out = args.out or args.root / "docs" / "scoreboard.md"
+    text = build(args.root, [p.id for p in probes])
+    if args.check:
+        current = out.read_text(encoding="utf-8") if out.exists() else ""  # universal newlines: CRLF compares equal
+        if current != text:
+            print(f"{out} is stale; run: PYTHONPATH=runner python -m cuport scoreboard")
+            return 1
+        print(f"{out} is up to date")
+        return 0
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(text, encoding="utf-8", newline="\n")
+    print(f"wrote {out}")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     argv = sys.argv[1:] if argv is None else argv
     ap = argparse.ArgumentParser(prog="cuport")
@@ -286,6 +310,10 @@ def main(argv: list[str] | None = None) -> int:
     rc.add_argument("--b", required=True)
     rc.add_argument("--probe", action="append", help="probe id prefix; repeatable")
     rc.set_defaults(fn=cmd_refcompare)
+    sb = sub.add_parser("scoreboard")
+    sb.add_argument("--out", type=pathlib.Path)
+    sb.add_argument("--check", action="store_true", help="exit 1 if the file differs from a fresh build")
+    sb.set_defaults(fn=cmd_scoreboard)
     args = ap.parse_args(argv)
     args.argv = argv
     return args.fn(args)
