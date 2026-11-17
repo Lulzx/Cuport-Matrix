@@ -1,3 +1,7 @@
+import os
+
+import pytest
+
 from cuport.adapters import execute
 from cuport.probe import discover
 from cuport.run import run_matrix
@@ -26,6 +30,7 @@ class FakeAdapter:
         return execute([str(executable)], timeout_s)
 
 
+@pytest.mark.skipif(os.name == "nt", reason="fake tools are POSIX shell scripts")
 def test_run_matrix_end_to_end(tmp_path):
     root = tmp_path / "probes"
     make_probe(root, stdout=GOOD)
@@ -46,6 +51,7 @@ def test_run_matrix_end_to_end(tmp_path):
     assert sorted(seen) == sorted(got)
 
 
+@pytest.mark.skipif(os.name == "nt", reason="fake tools are POSIX shell scripts")
 def test_triage_is_applied_by_tool_id(tmp_path):
     root = tmp_path / "probes"
     make_probe(root, stdout="CUPORT a u32 2 00000001 00000009\nCUPORT-DONE\n")

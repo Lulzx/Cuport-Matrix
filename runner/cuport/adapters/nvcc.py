@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import os
 import pathlib
+import shutil
 import subprocess
 from typing import Optional
 
@@ -12,6 +13,37 @@ import cuport.adapters as ad
 EXTRA_FLAGS: dict[str, list[str]] = {
     "limits-refusals/dynamic-parallelism-001": ["-rdc=true", "-lcudadevrt"],
 }
+
+VSWHERE = pathlib.Path(os.environ.get("ProgramFiles(x86)", r"C:\Program Files (x86)")) / \
+    "Microsoft Visual Studio" / "Installer" / "vswhere.exe"
+
+
+def msvc_bin() -> Optional[pathlib.Path]:
+    """Directory holding the x64 cl.exe nvcc should use on Windows: $CUPORT_NVCC_CCBIN,
+    else the newest Visual Studio install vswhere reports. None when not on Windows,
+    or when cl.exe is already on PATH (a vcvars shell)."""
+    if not ad.WINDOWS:
+        return None
+    if os.environ.get("CUPORT_NVCC_CCBIN"):
+        return pathlib.Path(os.environ["CUPORT_NVCC_CCBIN"])
+    if shutil.which("cl"):
+        return None
+    try:
+        r = subprocess.run([str(VSWHERE), "-latest", "-products", "*", "-find",
+                            r"VC\Tools\MSVC\*\bin\Hostx64\x64\cl.exe"], capture_output=True, text=True)
+    except OSError:
+        return None
+    found = sorted(l.strip() for l in r.stdout.splitlines() if l.strip())
+    return pathlib.Path(found[-1]).parent if found else None
+
+
+def host_flags() -> list[str]:
+    """Host-compiler flags. With MSVC, /Zc:preprocessor is required by CCCL 13
+    (cooperative_groups) and harmless everywhere else."""
+    if not ad.WINDOWS:
+        return []
+    ccbin = msvc_bin()
+    return [*(["-ccbin", str(ccbin)] if ccbin else []), "-Xcompiler", "/Zc:preprocessor"]
 
 
 class Nvcc:
@@ -59,9 +91,10 @@ class Nvcc:
         self, probe_dir: pathlib.Path, out_dir: pathlib.Path, timeout_s: float
     ) -> tuple[ad.StepResult, Optional[pathlib.Path]]:
         probe_id = f"{probe_dir.parent.name}/{probe_dir.name}"
-        exe = out_dir / "probe"
+        exe = out_dir / f"probe{ad.EXE_SUFFIX}"
         cmd = [
             self._nvcc(),
+            *host_flags(),
             "-std=c++17",
             f"-arch={self._arch()}",
             "-I",

@@ -5,8 +5,10 @@ from __future__ import annotations
 import datetime
 import os
 import pathlib
+import platform
 import re
 import shlex
+import shutil
 import subprocess
 from collections import Counter
 from dataclasses import dataclass, field
@@ -32,6 +34,26 @@ def _sh(cmd: list[str]) -> str:
         return subprocess.run(cmd, capture_output=True, text=True, timeout=60).stdout.strip()
     except (OSError, subprocess.SubprocessError):
         return ""
+
+
+def _msvc_host() -> str:
+    """'MSVC 14.44.35207 (cl 19.44.35207), Windows 10.0.26300' from the cl.exe nvcc will use."""
+    from cuport.adapters.nvcc import msvc_bin
+
+    ccbin = msvc_bin()
+    cl = str(ccbin / "cl.exe") if ccbin else shutil.which("cl")
+    if not cl:
+        return ""
+    toolset = re.search(r"MSVC[\\/](\d+\.\d+\.\d+)", cl)
+    try:
+        banner = subprocess.run([cl], capture_output=True, text=True, timeout=60).stderr
+    except (OSError, subprocess.SubprocessError):
+        banner = ""
+    ver = re.search(r"Version (\d+\.\d+\.\d+)", banner)
+    parts = [f"MSVC {toolset.group(1)}" if toolset else "MSVC"]
+    if ver:
+        parts.append(f"(cl {ver.group(1)})")
+    return " ".join(parts) + f", Windows {platform.version()}"
 
 
 def collect_env(root: Optional[pathlib.Path] = None) -> dict:
@@ -70,10 +92,12 @@ def collect_env(root: Optional[pathlib.Path] = None) -> dict:
             nvcc_line = line.strip()
             break
 
-    # 4. Host compiler
-    gcc_out = _sh(["gcc", "--version"])
-    if gcc_out:
-        host = gcc_out.splitlines()[0].strip()
+    # 4. Host compiler: MSVC on Windows (nvcc's only supported host compiler there), gcc elsewhere
+    host = _msvc_host() if os.name == "nt" else ""
+    if not host:
+        gcc_out = _sh(["gcc", "--version"])
+        if gcc_out:
+            host = gcc_out.splitlines()[0].strip()
 
     # 5. Repo commit & date
     commit = _sh(["git", "-C", str(repo_root), "rev-parse", "HEAD"])
@@ -94,7 +118,7 @@ def _make_relative(arg: str, root: pathlib.Path) -> str:
     try:
         p = pathlib.Path(arg)
         if p.is_absolute() and p.is_relative_to(root):
-            return str(p.relative_to(root))
+            return p.relative_to(root).as_posix()
     except (ValueError, TypeError):
         pass
     return arg
@@ -136,10 +160,11 @@ def write_drop(
     err_text = run_step.stderr if run_step else ""
     build_log = (compile_step.stdout or "") + (compile_step.stderr or "")
 
-    (drop_dir / "output.txt").write_text(out_text)
-    (drop_dir / "stderr.txt").write_text(err_text)
-    (drop_dir / "build.log").write_text(build_log)
-    (drop_dir / "meta.txt").write_text("\n".join(meta_lines) + "\n")
+    # LF on every platform, so drops written on Windows compare byte-for-byte.
+    (drop_dir / "output.txt").write_text(out_text, newline="\n")
+    (drop_dir / "stderr.txt").write_text(err_text, newline="\n")
+    (drop_dir / "build.log").write_text(build_log, newline="\n")
+    (drop_dir / "meta.txt").write_text("\n".join(meta_lines) + "\n", newline="\n")
 
 
 def _read_meta(drop_dir: pathlib.Path) -> dict[str, str]:

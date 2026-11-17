@@ -15,6 +15,8 @@ def test_nvcc_adapter_compile_flags(monkeypatch, tmp_path):
         return StepResult(cmd, 0, "", "", 0.0, False)
 
     monkeypatch.setattr(ad, "execute", fake_execute)
+    monkeypatch.setattr(ad, "WINDOWS", False)
+    monkeypatch.setattr(ad, "EXE_SUFFIX", "")
     monkeypatch.setenv("CUPORT_NVCC", "/custom/nvcc")
     monkeypatch.setenv("CUPORT_NVCC_ARCH", "sm_89")
 
@@ -57,6 +59,23 @@ def test_nvcc_adapter_compile_flags(monkeypatch, tmp_path):
         str(out_dir / "probe"),
         str(dp_probe / "probe.cu"),
     ]
+
+
+def test_nvcc_adapter_windows_uses_msvc(monkeypatch, tmp_path):
+    calls = []
+    monkeypatch.setattr(ad, "execute", lambda cmd, t, cwd=None, env=None: calls.append(cmd) or
+                        StepResult(cmd, 0, "", "", 0.0, False))
+    monkeypatch.setattr(ad, "WINDOWS", True)
+    monkeypatch.setattr(ad, "EXE_SUFFIX", ".exe")
+    monkeypatch.setenv("CUPORT_NVCC", "nvcc")
+    monkeypatch.setenv("CUPORT_NVCC_ARCH", "sm_89")
+    monkeypatch.setenv("CUPORT_NVCC_CCBIN", "C:/VC/bin/Hostx64/x64")
+    probe = tmp_path / "limits-refusals" / "cooperative-grid-sync-001"
+    probe.mkdir(parents=True)
+    step, exe = load_adapter("nvcc").compile(probe, tmp_path / "out", 10.0)
+    assert exe == tmp_path / "out" / "probe.exe"
+    assert calls[-1][:6] == ["nvcc", "-ccbin", str(pathlib.Path("C:/VC/bin/Hostx64/x64")),
+                             "-Xcompiler", "/Zc:preprocessor", "-std=c++17"]
 
 
 def test_nvcc_adapter_arch_detection(monkeypatch, tmp_path):

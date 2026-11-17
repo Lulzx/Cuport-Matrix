@@ -1,4 +1,5 @@
 import json
+import os
 import sys
 import types
 
@@ -36,6 +37,7 @@ def test_check_ok_and_failure(repo, capsys):
     assert cli.main(["--root", str(repo), "check"]) == 1
 
 
+@pytest.mark.skipif(os.name == "nt", reason="fake tools are POSIX shell scripts")
 def test_run_writes_valid_row_and_refuses_overwrite(repo, capsys):
     args = ["--root", str(repo), "run", "--tool", "fake", "--hardware", "m6-12c", "--date", "2026-11-16",
             "--jobs", "2", "--gpu-jobs", "1"]
@@ -67,6 +69,7 @@ int main() {
 """
 
 
+@pytest.mark.skipif(os.name == "nt", reason="needs clang++ and symlinks")
 def test_check_syntax(repo, capsys):
     d = repo / "probes" / "warp-primitives" / "shfl-xor-001"
     (repo / "probes" / "common").symlink_to(cli.ROOT / "probes" / "common")

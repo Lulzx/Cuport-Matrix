@@ -1,6 +1,7 @@
 """Cross-checks for probes/common: the Python oracle helpers and cuport.h must
 produce identical inputs and identical output encodings."""
 
+import os
 import pathlib
 import struct
 import subprocess
@@ -56,6 +57,7 @@ def test_f32_rounding_and_bits():
     assert co.f64_bits(1.0) == 0x3FF0000000000000
 
 
+@pytest.mark.skipif(os.name == "nt", reason="builds the header with a POSIX c++")
 def test_header_matches_python(tmp_path):
     src = tmp_path / "t.cpp"
     src.write_text(

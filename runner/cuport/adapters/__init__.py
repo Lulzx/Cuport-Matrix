@@ -29,17 +29,30 @@ class StepResult:
     timed_out: bool
 
 
+WINDOWS = os.name == "nt"
+EXE_SUFFIX = ".exe" if WINDOWS else ""
+
+
+def _kill_tree(proc: subprocess.Popen) -> None:
+    if WINDOWS:
+        subprocess.run(["taskkill", "/T", "/F", "/PID", str(proc.pid)], capture_output=True)
+    else:
+        os.killpg(proc.pid, 9)
+
+
 def execute(cmd: list[str], timeout_s: float, cwd: Optional[pathlib.Path] = None,
             env: Optional[dict] = None) -> StepResult:
-    """Run cmd, capture output, kill the whole process group on timeout."""
+    """Run cmd, capture output, kill the whole process tree on timeout."""
     start = time.monotonic()
+    group = ({"creationflags": subprocess.CREATE_NEW_PROCESS_GROUP} if WINDOWS
+             else {"start_new_session": True})
     proc = subprocess.Popen(cmd, cwd=cwd, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                            text=True, errors="replace", start_new_session=True)
+                            text=True, errors="replace", **group)
     try:
         out, err = proc.communicate(timeout=timeout_s)
         return StepResult(cmd, proc.returncode, out, err, time.monotonic() - start, False)
     except subprocess.TimeoutExpired:
-        os.killpg(proc.pid, 9)
+        _kill_tree(proc)
         out, err = proc.communicate()
         return StepResult(cmd, None, out, err, time.monotonic() - start, True)
 

@@ -53,7 +53,7 @@ def test_failed_compile_returns_no_executable(tools, tmp_path, monkeypatch):
 def test_run_invokes_executable(tools):
     _, calls = tools
     load_adapter("mvcc").run(pathlib.Path("/x/probe"), 5)
-    assert calls[-1] == ["/x/probe"]
+    assert calls[-1] == [str(pathlib.Path("/x/probe"))]
 
 
 def test_describe_has_pinned_version(tools):
