@@ -121,6 +121,9 @@ differences as platform notes).
 - `limits-refusals/dynamic-parallelism-001` needs `-rdc=true -lcudadevrt` on
   stock `nvcc`, and the drop's `meta.txt` records it.
 - Never commit fatbins, PTX, SASS or `cuobjdump` output.
+- The scoreboard lists each probe's drops, so run `PYTHONPATH=runner python
+  -m cuport scoreboard` and commit `docs/scoreboard.md` with any new drop or
+  result row; CI fails `scoreboard --check` otherwise.
 
 Committed drops: `rtx4500ada-cuda13.5` (RTX 4500 Ada, nvcc 13.5, MSVC 14.44,
 driver 596.71) and `rtx4090-cuda12.6` (two RTX 4090s, nvcc 12.6, gcc 12.3,
