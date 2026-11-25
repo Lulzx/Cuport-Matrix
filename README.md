@@ -9,7 +9,7 @@ A conformance and divergence matrix for <strong>CUDA on Apple GPUs</strong>: one
 [![CI](https://img.shields.io/github/actions/workflow/status/guru-bharadwaj20/Cuport-Matrix/ci.yml?style=for-the-badge&branch=main&label=CI&logo=githubactions&logoColor=white)](https://github.com/guru-bharadwaj20/Cuport-Matrix/actions/workflows/ci.yml)
 [![Matrix](https://img.shields.io/github/actions/workflow/status/guru-bharadwaj20/Cuport-Matrix/matrix.yml?style=for-the-badge&branch=main&label=Matrix&logo=githubactions&logoColor=white)](https://github.com/guru-bharadwaj20/Cuport-Matrix/actions/workflows/matrix.yml)
 [![Probes](https://img.shields.io/badge/Probes-42%20%C2%B7%208%20Families-1565C0?style=for-the-badge&labelColor=42A5F5)](probes/README.md)
-[![Tools](https://img.shields.io/badge/Tools-CuMetal%20v0.8.0%20%C2%B7%20mvcc%20v1.3.0-6A1B9A?style=for-the-badge&labelColor=AB47BC)](#what-it-does)
+[![Tools](https://img.shields.io/badge/Tools-CuMetal%20v0.9.1%20%C2%B7%20mvcc%20v1.3.0-6A1B9A?style=for-the-badge&labelColor=AB47BC)](#what-it-does)
 [![Lanes](https://img.shields.io/badge/Apple%20Lanes-M6%20%C2%B7%20Paravirtual%20GPU-E65100?style=for-the-badge&labelColor=FF9800)](#architecture)
 [![References](https://img.shields.io/badge/NVIDIA%20References-RTX%204500%20Ada%20%C2%B7%202%C3%97%20RTX%204090-2E7D32?style=for-the-badge&labelColor=66BB6A)](probes/README.md#reference-drops)
 [![Coverage](https://img.shields.io/badge/Cells%20Classified-168%20%2F%20168-00897B?style=for-the-badge&labelColor=26A69A)](docs/scoreboard.md)

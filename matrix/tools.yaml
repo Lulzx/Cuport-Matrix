@@ -9,9 +9,9 @@ tools:
     name: CuMetal
     repo: https://github.com/Lulzx/cuda-metal
     license: Apache-2.0
-    version: v0.8.0
-    commit: 6651796af080ee9d869dddcd888ee158450e6a68
-    released: 2026-11-08
+    version: v0.9.1
+    commit: 616e7d950e56be5293f899379d257ad950544c2a
+    released: 2026-11-25
     install: "brew tap (see repo README) or make from source"
     route: "CUDA C++ source -> MSL via typed IR; runtime shim"
     in_milestone: v0

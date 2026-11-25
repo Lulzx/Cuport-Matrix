@@ -3,7 +3,7 @@
 # into the layout the adapters in runner/cuport/adapters/ expect:
 #
 #   $CUPORT_TOOLS/mvcc-v1.3.0/bin/nvcc        (checkout in $CUPORT_TOOLS/src/mvcc)
-#   $CUPORT_TOOLS/cumetal-v0.8.0/bin/cumetalc (checkout in $CUPORT_TOOLS/src/cuda-metal)
+#   $CUPORT_TOOLS/cumetal-v0.9.1/bin/cumetalc (checkout in $CUPORT_TOOLS/src/cuda-metal)
 #
 #   .github/scripts/build-tools.sh [all|mvcc|cumetal]
 #

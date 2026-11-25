@@ -82,6 +82,15 @@ entries:
     notes: "Only the double buffers fail: default --fp64=fast48 keeps the binary32 exponent envelope, so double subnormals become zero; float subnormals are kept; bit-exact with --fp64=ieee64"
 
   - tool: cumetal
+    probe: fp-semantics/denormals-001
+    hardware: [m4-pro]
+    raw_class: silently-wrong
+    class: documented-divergence
+    reference: https://github.com/Lulzx/cuda-metal/blob/v0.9.1/docs/known-gaps/platform.md?plain=1#L25-L40
+    upstream: null
+    notes: "Float and double buffers fail: the M4 Pro GPU flushes FP32 subnormal arithmetic to zero in every Metal math mode (documented in CuMetal v0.9.1), and default --fp64=fast48 keeps the binary32 exponent envelope for doubles"
+
+  - tool: cumetal
     probe: fp-semantics/fma-contraction-001
     raw_class: silently-wrong
     class: undocumented-divergence

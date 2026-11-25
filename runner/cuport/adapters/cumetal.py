@@ -1,7 +1,7 @@
-"""CuMetal v0.8.0 (Lulzx/cuda-metal): cumetalc compiles CUDA source to a
+"""CuMetal v0.9.1 (Lulzx/cuda-metal): cumetalc compiles CUDA source to a
 linked executable.
 
-Built from the pinned tag and installed at $CUPORT_TOOLS/cumetal-v0.8.0.
+Built from the pinned tag and installed at $CUPORT_TOOLS/cumetal-v0.9.1.
 cumetalc packages kernels into a metallib with Apple's offline Metal
 compiler (`xcrun metal`), which ships with full Xcode, not the Command Line
 Tools; without it the tool is reported unavailable rather than run."""
@@ -12,7 +12,7 @@ import subprocess
 
 import cuport.adapters as ad
 
-VERSION = "v0.8.0"
+VERSION = "v0.9.1"
 
 
 class CuMetal:

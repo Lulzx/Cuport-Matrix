@@ -40,7 +40,7 @@ def test_cumetal_compile_command(tools, tmp_path):
     probe = tmp_path / "p"
     out = tmp_path / "o"
     load_adapter("cumetal").compile(probe, out, 10)
-    assert calls[-1] == [str(root / "cumetal-v0.8.0" / "bin" / "cumetalc"), str(probe / "probe.cu"),
+    assert calls[-1] == [str(root / "cumetal-v0.9.1" / "bin" / "cumetalc"), str(probe / "probe.cu"),
                          "-I", str(COMMON_DIR), "-o", str(out / "probe")]
 
 
@@ -57,6 +57,6 @@ def test_run_invokes_executable(tools):
 
 
 def test_describe_has_pinned_version(tools):
-    for tool, version in (("mvcc", "v1.3.0"), ("cumetal", "v0.8.0")):
+    for tool, version in (("mvcc", "v1.3.0"), ("cumetal", "v0.9.1")):
         d = load_adapter(tool).describe()
         assert d["id"] == tool and d["version"] == version and "commit" in d
