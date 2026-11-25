@@ -13,6 +13,7 @@ divergence is explained in `docs/divergences.md`.
 | mvcc v1.3.0 | `paravirtual` | [2026-11-21](../results/mvcc/paravirtual/2026-11-21.json) | `cb241a9` | 0 | 0 | 0 | 0 | 42 | 0 | 0 | 0 |
 | cumetal v0.8.0 | `m6-12c` | [2026-11-17](../results/cumetal/m6-12c/2026-11-17.json) | `518cea7` | 27 | 2 | 3 | 5 | 5 | 0 | 0 | 0 |
 | cumetal v0.8.0 | `paravirtual` | [2026-11-21](../results/cumetal/paravirtual/2026-11-21.json) | `cb241a9` | 0 | 0 | 0 | 0 | 0 | 0 | 42 | 0 |
+| cumetal v0.9.1 | `m4-pro` | [2026-11-25](../results/cumetal/m4-pro/2026-11-25.json) | `9c6ab52` | 36 | 2 | 2 | 0 | 2 | 0 | 0 | 0 |
 
 ## Milestone v0 criteria
 
@@ -120,58 +121,58 @@ Legend: exact = bit-exact, tol = within-tolerance, doc-div = documented-divergen
 The NVIDIA column lists the stock-`nvcc` reference drops committed for the
 probe (`probes/<family>/<id>/reference/`); every drop matches the probe's oracle.
 
-| Probe | mvcc `m6-12c` | mvcc `paravirtual` | cumetal `m6-12c` | cumetal `paravirtual` | NVIDIA |
-|---|:-:|:-:|:-:|:-:|---|
-| **atomics** | | | | | |
-| `atomic-64bit-001` | exact | refused | exact | **crash** | · |
-| `atomic-add-001` | exact | refused | exact | **crash** | · |
-| `cas-loop-001` | exact | refused | exact | **crash** | · |
-| `min-max-unsigned-001` | exact | refused | exact | **crash** | · |
-| `shared-contention-001` | exact | refused | exact | **crash** | · |
-| **device-services** | | | | | |
-| `assert-001` | refused | refused | doc-div | **crash** | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
-| `clock64-001` | refused | refused | exact | **crash** | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
-| `malloc-free-001` | refused | refused | exact | **crash** | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
-| `printf-001` | doc-div | refused | refused | **crash** | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
-| **fp-semantics** | | | | | |
-| `denormals-001` | exact | refused | doc-div | **crash** | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
-| `fast-expf-001` | tol | refused | tol | **crash** | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
-| `fast-fdividef-001` | exact | refused | exact | **crash** | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
-| `fast-sinf-001` | tol | refused | tol | **crash** | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
-| `fma-contraction-001` | exact | refused | **UNDOC** | **crash** | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
-| `fp64-emulation-001` | refused | refused | doc-div | **crash** | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
-| `half-bf16-001` | exact | refused | refused | **crash** | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
-| `rounding-modes-001` | refused | refused | exact | **crash** | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
-| **launch-geometry** | | | | | |
-| `dim3-3d-001` | exact | refused | exact | **crash** | · |
-| `dynamic-shared-size-001` | exact | refused | exact | **crash** | · |
-| `large-grid-001` | exact | refused | exact | **crash** | · |
-| `thread-block-index-001` | exact | refused | exact | **crash** | · |
-| `zero-size-launch-001` | exact | refused | **UNDOC** | **crash** | · |
-| **limits-refusals** | | | | | |
-| `cooperative-grid-sync-001` | refused | refused | refused | **crash** | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
-| `dynamic-parallelism-001` | refused | refused | refused | **crash** | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
-| `inline-ptx-001` | exact | refused | exact | **crash** | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
-| `oversized-shared-001` | **UNDOC** | refused | **UNDOC** | **crash** | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
-| `texture-object-001` | refused | refused | exact | **crash** | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
-| **shared-memory-barriers** | | | | | |
-| `dynamic-shared-001` | exact | refused | exact | **crash** | · |
-| `shared-32kb-001` | exact | refused | exact | **crash** | · |
-| `static-shared-001` | exact | refused | exact | **crash** | · |
-| `syncthreads-count-001` | **UNDOC** | refused | refused | **crash** | · |
-| `syncthreads-reduction-001` | exact | refused | exact | **crash** | · |
-| **streams-events** | | | | | |
-| `async-memcpy-overlap-001` | exact | refused | exact | **crash** | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
-| `default-stream-sync-001` | exact | refused | exact | **crash** | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
-| `event-timing-001` | exact | refused | **UNDOC** | **crash** | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
-| `stream-ordering-001` | exact | refused | exact | **crash** | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
-| **warp-primitives** | | | | | |
-| `ballot-any-all-001` | exact | refused | exact | **crash** | · |
-| `match-any-001` | exact | refused | exact | **crash** | · |
-| `partial-warp-001` | exact | refused | exact | **crash** | · |
-| `shfl-variants-001` | exact | refused | exact | **crash** | · |
-| `shfl-xor-width-001` | exact | refused | **UNDOC** | **crash** | · |
-| `warp-reduce-add-001` | exact | refused | exact | **crash** | · |
+| Probe | mvcc `m6-12c` | mvcc `paravirtual` | cumetal `m6-12c` | cumetal `paravirtual` | cumetal `m4-pro` | NVIDIA |
+|---|:-:|:-:|:-:|:-:|:-:|---|
+| **atomics** | | | | | | |
+| `atomic-64bit-001` | exact | refused | exact | **crash** | exact | · |
+| `atomic-add-001` | exact | refused | exact | **crash** | exact | · |
+| `cas-loop-001` | exact | refused | exact | **crash** | exact | · |
+| `min-max-unsigned-001` | exact | refused | exact | **crash** | exact | · |
+| `shared-contention-001` | exact | refused | exact | **crash** | exact | · |
+| **device-services** | | | | | | |
+| `assert-001` | refused | refused | doc-div | **crash** | exact | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
+| `clock64-001` | refused | refused | exact | **crash** | exact | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
+| `malloc-free-001` | refused | refused | exact | **crash** | exact | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
+| `printf-001` | doc-div | refused | refused | **crash** | exact | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
+| **fp-semantics** | | | | | | |
+| `denormals-001` | exact | refused | doc-div | **crash** | doc-div | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
+| `fast-expf-001` | tol | refused | tol | **crash** | tol | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
+| `fast-fdividef-001` | exact | refused | exact | **crash** | exact | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
+| `fast-sinf-001` | tol | refused | tol | **crash** | tol | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
+| `fma-contraction-001` | exact | refused | **UNDOC** | **crash** | exact | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
+| `fp64-emulation-001` | refused | refused | doc-div | **crash** | doc-div | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
+| `half-bf16-001` | exact | refused | refused | **crash** | exact | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
+| `rounding-modes-001` | refused | refused | exact | **crash** | exact | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
+| **launch-geometry** | | | | | | |
+| `dim3-3d-001` | exact | refused | exact | **crash** | exact | · |
+| `dynamic-shared-size-001` | exact | refused | exact | **crash** | exact | · |
+| `large-grid-001` | exact | refused | exact | **crash** | exact | · |
+| `thread-block-index-001` | exact | refused | exact | **crash** | exact | · |
+| `zero-size-launch-001` | exact | refused | **UNDOC** | **crash** | exact | · |
+| **limits-refusals** | | | | | | |
+| `cooperative-grid-sync-001` | refused | refused | refused | **crash** | refused | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
+| `dynamic-parallelism-001` | refused | refused | refused | **crash** | refused | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
+| `inline-ptx-001` | exact | refused | exact | **crash** | exact | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
+| `oversized-shared-001` | **UNDOC** | refused | **UNDOC** | **crash** | exact | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
+| `texture-object-001` | refused | refused | exact | **crash** | exact | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
+| **shared-memory-barriers** | | | | | | |
+| `dynamic-shared-001` | exact | refused | exact | **crash** | exact | · |
+| `shared-32kb-001` | exact | refused | exact | **crash** | exact | · |
+| `static-shared-001` | exact | refused | exact | **crash** | exact | · |
+| `syncthreads-count-001` | **UNDOC** | refused | refused | **crash** | exact | · |
+| `syncthreads-reduction-001` | exact | refused | exact | **crash** | exact | · |
+| **streams-events** | | | | | | |
+| `async-memcpy-overlap-001` | exact | refused | exact | **crash** | exact | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
+| `default-stream-sync-001` | exact | refused | exact | **crash** | exact | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
+| `event-timing-001` | exact | refused | **UNDOC** | **crash** | exact | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
+| `stream-ordering-001` | exact | refused | exact | **crash** | exact | rtx4090-cuda12.6, rtx4500ada-cuda13.5 |
+| **warp-primitives** | | | | | | |
+| `ballot-any-all-001` | exact | refused | exact | **crash** | exact | · |
+| `match-any-001` | exact | refused | exact | **crash** | exact | · |
+| `partial-warp-001` | exact | refused | exact | **crash** | exact | · |
+| `shfl-variants-001` | exact | refused | exact | **crash** | exact | · |
+| `shfl-xor-width-001` | exact | refused | **UNDOC** | **crash** | exact | · |
+| `warp-reduce-add-001` | exact | refused | exact | **crash** | exact | · |
 
 ## Upstream issues
 
